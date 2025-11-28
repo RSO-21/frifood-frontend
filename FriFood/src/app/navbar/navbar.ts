@@ -1,28 +1,21 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
+import { Login } from '../login/login';
+import { LoginService } from '../login/login.service';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.less'],
+  imports: [Login],
 })
 export class Navbar {
-  @ViewChild('loginModal') loginModal!: ElementRef<HTMLElement>;
-  @ViewChild('signupModal') signupModal!: ElementRef<HTMLElement>;
+  constructor(private readonly loginService: LoginService) {}
 
-  private loginInstance: any;
-  private signupInstance: any;
-
-  async openLogin() {
-    if (typeof window === 'undefined') return; // SSR guard
-    const { Modal } = await import('bootstrap'); // loads only in browser
-    this.loginInstance ||= new Modal(this.loginModal.nativeElement);
-    this.loginInstance.show();
+  openLogin(): void {
+    this.loginService.triggerLogin();
   }
 
-  async openSignup() {
-    if (typeof window === 'undefined') return;
-    const { Modal } = await import('bootstrap');
-    this.signupInstance ||= new Modal(this.signupModal.nativeElement);
-    this.signupInstance.show();
+  openSignup(): void {
+    this.loginService.triggerSignup();
   }
 }

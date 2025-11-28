@@ -26,3 +26,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Environments
+/FriFood/src/environments/environment.prod.ts
