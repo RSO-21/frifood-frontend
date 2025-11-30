@@ -61,10 +61,7 @@ export class Login implements AfterViewInit {
   }
 
   submitLogin(): void {
-    console.log('submitLogin called');
     if (this.loginForm.valid) {
-      console.log('Login form submitted:', this.loginForm.value);
-      // emit event / call API service
       this.auth.login(this.loginForm.value.email, this.loginForm.value.password);
     } else {
       console.log('Form invalid');
@@ -74,8 +71,11 @@ export class Login implements AfterViewInit {
 
   submitSignup(): void {
     if (this.signupForm.valid) {
-      console.log('Signup form submitted:', this.signupForm.value);
-      // emit event / call API service
+      this.auth.signup(
+        this.signupForm.value.name,
+        this.signupForm.value.email,
+        this.signupForm.value.password
+      );
     } else {
       this.signupForm.markAllAsTouched();
     }

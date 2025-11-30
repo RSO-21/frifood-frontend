@@ -70,6 +70,25 @@ export class AuthService {
       });
   }
 
+  signup(username: string, email: string, password: string) {
+    return this.http
+      .post<LoginResponse>(`${this.API_URL}/auth/signup`, {
+        username,
+        email,
+        password,
+      })
+      .subscribe({
+        next: (res) => {
+          this._token.set(res.access_token);
+          localStorage.setItem('access_token', res.access_token);
+          this.loadMe();
+        },
+        error: (err) => {
+          console.error('Signup failed', err);
+        },
+      });
+  }
+
   loadMe() {
     const token = this._token();
     if (!token) return;
