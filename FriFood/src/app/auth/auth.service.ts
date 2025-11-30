@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 
+import { LoginService } from '../login/login.service';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { isPlatformBrowser } from '@angular/common';
 
 export interface LoginResponse {
   access_token: string;
@@ -27,6 +27,7 @@ export interface User {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private loginService = inject(LoginService);
 
   // base URL of your Flask auth microservice
   private readonly API_URL = environment.authServiceUrl;
@@ -37,79 +38,68 @@ export class AuthService {
 
   // public read-only signals
   token = computed(() => this._token());
-  currentUser = computed(() => this._user());
-  isAuthenticated = computed(() => this._token() !== null);
-
-  private readonly platformId = inject(PLATFORM_ID);
-
-  constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedToken = localStorage.getItem('access_token');
-      if (savedToken) {
-        this._token.set(savedToken);
-        this.loadMe();
-      }
-    }
-  }
+  isAuthenticated = computed(() => this._user() !== null);
+  username = computed(() => this._user()?.preferred_username || null);
 
   login(username: string, password: string) {
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/auth/login`, {
-        username,
-        password,
-      })
+      .post(
+        `${this.API_URL}/auth/login`,
+        {
+          username,
+          password,
+        },
+        { withCredentials: true }
+      )
       .subscribe({
-        next: (res) => {
-          this._token.set(res.access_token);
-          localStorage.setItem('access_token', res.access_token);
-          this.loadMe();
-        },
-        error: (err) => {
-          console.error('Login failed', err);
-        },
+        next: () => this.loadMe(),
+        error: (err) => console.error('Login failed', err),
       });
   }
 
   signup(username: string, email: string, password: string) {
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/auth/signup`, {
-        username,
-        email,
-        password,
-      })
+      .post(
+        `${this.API_URL}/auth/signup`,
+        {
+          username,
+          email,
+          password,
+        },
+        { withCredentials: true }
+      )
       .subscribe({
-        next: (res) => {
-          this._token.set(res.access_token);
-          localStorage.setItem('access_token', res.access_token);
-          this.loadMe();
-        },
-        error: (err) => {
-          console.error('Signup failed', err);
-        },
+        next: () => this.loadMe(),
+        error: (err) => console.error('Signup failed', err),
       });
   }
 
   loadMe() {
-    const token = this._token();
-    if (!token) return;
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    this.http.get<User>(`${this.API_URL}/auth/me`, { headers }).subscribe({
-      next: (user) => this._user.set(user),
-      error: (e) => {
-        console.error('Failed to load user', e);
-        this.logout();
-      },
-    });
+    this.http
+      .get<User>(`${this.API_URL}/auth/me`, {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: (user) => {
+          this._user.set(user);
+          this.loginService.reset();
+        },
+        error: () => this._user.set(null),
+      });
   }
 
   logout() {
-    this._token.set(null);
-    this._user.set(null);
-    localStorage.removeItem('access_token');
-    this.router.navigate(['/']);
+    this.http
+      .post(
+        `${this.API_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .subscribe(() => {
+        this._user.set(null);
+        this.router.navigate(['/']);
+      });
   }
 }
