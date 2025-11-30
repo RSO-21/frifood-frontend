@@ -21,6 +21,7 @@ export class LoginService {
   }
 
   reset(): void {
+    console.log('Resetting login/signup modals');
     this._openLogin.next(false);
     this._openSignup.next(false);
   }

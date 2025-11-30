@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
+import { AuthService } from '../auth/auth.service';
 import { Login } from '../login/login';
 import { LoginService } from '../login/login.service';
 
@@ -9,13 +11,6 @@ import { LoginService } from '../login/login.service';
   imports: [Login],
 })
 export class Navbar {
-  constructor(private readonly loginService: LoginService) {}
-
-  openLogin(): void {
-    this.loginService.triggerLogin();
-  }
-
-  openSignup(): void {
-    this.loginService.triggerSignup();
-  }
+  auth = inject(AuthService);
+  login = inject(LoginService);
 }

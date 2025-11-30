@@ -1,8 +1,19 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AuthService } from '../auth/auth.service';
 import { LoginService } from './login.service';
+import { Modal } from 'bootstrap';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 declare const bootstrap: unknown;
@@ -17,7 +28,7 @@ declare const bootstrap: unknown;
     'aria-label': 'User authentication modals',
   },
 })
-export class Login implements AfterViewInit {
+export class Login implements OnInit, AfterViewInit {
   @ViewChild('loginModal') loginModal!: ElementRef<HTMLElement>;
   @ViewChild('signupModal') signupModal!: ElementRef<HTMLElement>;
 
@@ -25,6 +36,8 @@ export class Login implements AfterViewInit {
   private readonly loginService = inject(LoginService);
   private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+
+  private readonly platformId = inject(PLATFORM_ID);
 
   // 👇 Typed reactive forms
   loginForm: FormGroup = this.fb.group({
@@ -38,44 +51,64 @@ export class Login implements AfterViewInit {
     password: ['', Validators.required],
   });
 
+  ngOnInit(): void {
+    this.auth.loadMe();
+  }
+
   ngAfterViewInit(): void {
-    this.loginService.openLogin$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.openModal(this.loginModal);
-    });
+    this.loginService.openLogin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((open: boolean) => {
+        if (open) {
+          this.openModal(this.loginModal);
+        } else {
+          console.log('Closing login modal');
+          this.closeModal(this.loginModal);
+        }
+      });
 
     this.loginService.openSignup$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((open: boolean) => {
         if (open) {
           this.openModal(this.signupModal);
+        } else {
+          this.closeModal(this.signupModal);
         }
       });
   }
 
-  private openModal(ref: ElementRef<HTMLElement>): void {
-    const bs = bootstrap as {
-      Modal: new (el: HTMLElement) => { show(): void };
-    };
-    const modal = new bs.Modal(ref.nativeElement);
+  private async openModal(ref: ElementRef<HTMLElement>): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const { Modal } = await import('bootstrap');
+    const modal = new Modal(ref.nativeElement);
     modal.show();
   }
 
+  private async closeModal(ref: ElementRef<HTMLElement>): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const { Modal } = await import('bootstrap');
+    const modal = Modal.getInstance(ref.nativeElement);
+    modal?.hide();
+  }
+
   submitLogin(): void {
-    console.log('submitLogin called');
     if (this.loginForm.valid) {
-      console.log('Login form submitted:', this.loginForm.value);
-      // emit event / call API service
       this.auth.login(this.loginForm.value.email, this.loginForm.value.password);
     } else {
-      console.log('Form invalid');
       this.loginForm.markAllAsTouched();
     }
   }
 
   submitSignup(): void {
     if (this.signupForm.valid) {
-      console.log('Signup form submitted:', this.signupForm.value);
-      // emit event / call API service
+      this.auth.signup(
+        this.signupForm.value.name,
+        this.signupForm.value.email,
+        this.signupForm.value.password
+      );
     } else {
       this.signupForm.markAllAsTouched();
     }
