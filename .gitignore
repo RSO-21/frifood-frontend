@@ -28,4 +28,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environments
-/FriFood/src/environments/environment.prod.ts
+/FriFood/src/environments/environment.ts
+/FriFood/src/environments/environment.docker.ts

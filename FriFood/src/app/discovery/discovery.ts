@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
+import { PartnerService } from '../services/partner.service';
 
 @Component({
   selector: 'app-discovery',
@@ -7,5 +9,7 @@ import { Component } from '@angular/core';
   styleUrl: './discovery.less',
 })
 export class Discovery {
+  private partnerService = inject(PartnerService);
 
+  partners = this.partnerService.partners;
 }

@@ -1,1 +1,25 @@
-<p>discovery works!</p>
+<div class="container">
+  <h2>Najdene ponudbe</h2>
+
+  @if (partners().length === 0) {
+  <div class="empty-state">
+    <p>Ni najdenih ponudb v bližini.</p>
+  </div>
+  } @else {
+  <div class="row">
+    @for (partner of partners(); track partner.id) {
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ partner.name }}</h5>
+          <p class="card-text">
+            {{ partner.address }}<br />
+            {{ partner.city }}
+          </p>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

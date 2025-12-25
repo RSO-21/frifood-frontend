@@ -1,9 +1,12 @@
 export const environment = {
   production: true,
-
+  GOOGLE_API_KEY: '',
   // Real deployed URLs
   authServiceUrl: '',
   userServiceUrl: '',
   orderServiceUrl: '',
+  offerServiceUrl: '',
+  paymentServiceUrl: '',
+  partnerServiceUrl: '',
   // in tako naprej
 };
