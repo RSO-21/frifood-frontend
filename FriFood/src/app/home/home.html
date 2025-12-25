@@ -7,11 +7,6 @@
       center/cover no-repeat;
   "
 >
-  <div
-    class="position-absolute top-0 start-0 w-100 h-100"
-    style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.65))"
-  ></div>
-
   <div class="container position-relative text-center" style="z-index: 2">
     <h1 id="home-title" class="fw-bold display-5 mb-3">DOBRI OBROKI.<br />BOLJŠA CENA.</h1>
     <p class="lead mb-4">
@@ -25,12 +20,18 @@
           <i class="bi bi-geo-alt text-secondary"></i>
         </span>
         <input
+          #addressInput
           id="search-location"
           type="text"
           class="form-control border-start-0"
           placeholder="Vnesi naslov ali lokacijo"
         />
-        <button class="btn btn-brand text-white" type="button" id="najdi-button">
+        <button
+          class="btn btn-brand text-white"
+          type="button"
+          id="najdi-button"
+          (click)="findOffers()"
+        >
           Najdi ponudbe
         </button>
       </div>

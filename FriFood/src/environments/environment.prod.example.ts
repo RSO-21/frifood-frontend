@@ -7,5 +7,6 @@ export const environment = {
   orderServiceUrl: '',
   offerServiceUrl: '',
   paymentServiceUrl: '',
+  partnerServiceUrl: '',
   // in tako naprej
 };
