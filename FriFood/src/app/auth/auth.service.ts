@@ -3,6 +3,7 @@ import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core
 
 import { LoginService } from '../login/login.service';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 import { environment } from '../../environments/environment';
 
 export interface LoginResponse {
@@ -14,7 +15,7 @@ export interface LoginResponse {
   scope?: string;
 }
 
-export interface User {
+export interface KeycloakUser {
   sub: string;
   email?: string;
   preferred_username?: string;
@@ -28,18 +29,19 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private loginService = inject(LoginService);
+  private userService = inject(UserService);
 
   // base URL of your Flask auth microservice
   private readonly API_URL = environment.authServiceUrl;
 
   // signals
   private readonly _token = signal<string | null>(null);
-  private readonly _user = signal<User | null>(null);
+  private readonly _keycloakUser = signal<KeycloakUser | null>(null);
 
   // public read-only signals
   token = computed(() => this._token());
-  isAuthenticated = computed(() => this._user() !== null);
-  username = computed(() => this._user()?.preferred_username || null);
+  isAuthenticated = computed(() => this._keycloakUser() !== null);
+  username = computed(() => this._keycloakUser()?.preferred_username || null);
 
   login(username: string, password: string) {
     return this.http
@@ -76,15 +78,16 @@ export class AuthService {
 
   loadMe() {
     this.http
-      .get<User>(`${this.API_URL}/auth/me`, {
+      .get<KeycloakUser>(`${this.API_URL}/auth/me`, {
         withCredentials: true,
       })
       .subscribe({
         next: (user) => {
-          this._user.set(user);
+          this._keycloakUser.set(user);
           this.loginService.reset();
+          this.userService.loadUser(user.sub);
         },
-        error: () => this._user.set(null),
+        error: () => this._keycloakUser.set(null),
       });
   }
 
@@ -98,7 +101,7 @@ export class AuthService {
         }
       )
       .subscribe(() => {
-        this._user.set(null);
+        this._keycloakUser.set(null);
         this.router.navigate(['/']);
       });
   }

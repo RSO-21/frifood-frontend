@@ -62,7 +62,6 @@ export class Login implements OnInit, AfterViewInit {
         if (open) {
           this.openModal(this.loginModal);
         } else {
-          console.log('Closing login modal');
           this.closeModal(this.loginModal);
         }
       });

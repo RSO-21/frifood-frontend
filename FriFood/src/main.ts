@@ -26,7 +26,6 @@ function loadGoogleMaps(): Promise<void> {
 }
 loadGoogleMaps()
   .then(() => {
-    console.log('Google Maps API loaded successfully');
     bootstrapApplication(App, appConfig).catch((err) => console.error(err));
   })
   .catch((error) => {

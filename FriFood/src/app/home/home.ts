@@ -1,12 +1,23 @@
-import { Component, ElementRef, PLATFORM_ID, ViewChild, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  PLATFORM_ID,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 
+import { OrderService } from '../services/order.service';
 import { PartnerService } from '../services/partner.service';
+import { Partners } from '../partners/partners';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [Partners],
   templateUrl: './home.html',
   styleUrl: './home.less',
 })
@@ -20,7 +31,30 @@ export class Home {
 
   private platformId = inject(PLATFORM_ID);
   private partnerService = inject(PartnerService);
-  private router = inject(Router);
+
+  private userService = inject(UserService);
+
+  user = this.userService.user;
+
+  constructor() {
+    effect(() => {
+      const user = this.userService.user();
+
+      if (!user) return;
+
+      if (user.latitude && user.longitude) {
+        this.partnerService
+          .getNearbyPartners({
+            lat: user.latitude,
+            lng: user.longitude,
+            radius_km: 5,
+          })
+          .subscribe((partners) => {
+            this.partnerService.setPartners(partners);
+          });
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     //  Skip on server
@@ -44,7 +78,6 @@ export class Home {
     });
 
     this.autocomplete.addListener('place_changed', () => {
-      console.log('Place changed');
       const place = this.autocomplete.getPlace();
 
       // reject free text
@@ -76,18 +109,17 @@ export class Home {
     const lat = location.lat();
     const lng = location.lng();
 
-    console.log('Address:', this.selectedPlace.formatted_address);
-    console.log('Lat:', lat, 'Lng:', lng);
-
     if (lat && lng) {
       this.partnerService.getNearbyPartners({ lat, lng, radius_km: 5 }).subscribe((partners) => {
         this.partnerService.setPartners(partners);
-        this.router.navigate(['/discovery']);
+      });
+      this.userService.updateUser(this.userService.user_id(), {
+        latitude: lat,
+        longitude: lng,
+        address: this.selectedPlace.formatted_address,
       });
     } else {
-      this.partnerService.listPartners().subscribe((partners) => {
-        console.log('All partners:', partners);
-      });
+      this.partnerService.listPartners().subscribe((partners) => {});
     }
   }
 }

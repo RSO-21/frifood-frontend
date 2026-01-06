@@ -1,40 +1,10 @@
-<div
-  id="home"
-  class="position-relative text-white d-flex align-items-center justify-content-center"
-  style="
-    min-height: 70vh;
-    background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop')
-      center/cover no-repeat;
-  "
->
-  <div class="container position-relative text-center" style="z-index: 2">
-    <h1 id="home-title" class="fw-bold display-5 mb-3">DOBRI OBROKI.<br />BOLJŠA CENA.</h1>
-    <p class="lead mb-4">
-      Odkrij presežke hrane iz bližnjih lokalov in pomagaj zmanjšati zavržke.<br />
-      Okusno, ugodno in odgovorno.
-    </p>
+<input
+  #addressInput
+  id="search-location"
+  type="text"
+  class="form-control border-start-0"
+  placeholder="Vnesi naslov ali lokacijo"
+/>
+<button class="btn btn-brand text-white" type="button" id="najdi-button">Najdi ponudbe</button>
 
-    <div class="search-container mx-auto" style="max-width: 600px">
-      <div class="input-group input-group-lg shadow">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="bi bi-geo-alt text-secondary"></i>
-        </span>
-        <input
-          #addressInput
-          id="search-location"
-          type="text"
-          class="form-control border-start-0"
-          placeholder="Vnesi naslov ali lokacijo"
-        />
-        <button
-          class="btn btn-brand text-white"
-          type="button"
-          id="najdi-button"
-          (click)="findOffers()"
-        >
-          Najdi ponudbe
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+<app-partners></app-partners>

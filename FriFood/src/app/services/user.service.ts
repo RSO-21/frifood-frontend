@@ -1,0 +1,52 @@
+import { User as DbUser, UserUpdate } from '../models';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+
+import { environment } from '../../environments/environment';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UserService {
+  private readonly http = inject(HttpClient);
+  private readonly API_URL = environment.userServiceUrl;
+
+  // store full DB user
+  private readonly _user = signal<DbUser | null>(null);
+  user = this._user.asReadonly();
+  user_id = computed(() => this.user()?.id || '');
+  user_partner_id = computed(() => this.user()?.partner_id || null);
+
+  /** Fetch user by Keycloak ID */
+  fetchById(userId: string) {
+    return this.http.get<DbUser>(`${this.API_URL}/users/${userId}`);
+  }
+
+  /** Load and store user */
+  loadUser(userId: string) {
+    return this.fetchById(userId).subscribe({
+      next: (user) => {
+        this._user.set(user);
+      },
+      error: () => {
+        console.error('Failed to load user');
+        this._user.set(null);
+      },
+    });
+  }
+
+  updateUser(userId: string, updates: Partial<UserUpdate>) {
+    return this.http.patch<DbUser>(`${this.API_URL}/users/${userId}`, updates).subscribe({
+      next: (user) => {
+        this._user.set(user);
+      },
+      error: (err) => {
+        console.error('Failed to update user', err);
+      },
+    });
+  }
+
+  clear() {
+    this._user.set(null);
+  }
+}
