@@ -22,19 +22,16 @@ jobs:
         run: |
           echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
 
-      - name: Build
+      - name: Build & push PROD SHA image
         run: |
-          docker build -t "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:${{ steps.vars.outputs.TAG }}" .
-
-
-      - name: Push SHA tag
-        run: |
+          docker build \
+            --build-arg BUILD_ENV=production \
+            -t "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:${{ steps.vars.outputs.TAG }}" .
           docker push "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:${{ steps.vars.outputs.TAG }}"
 
-      - name: Tag dev
+      - name: Build & push DEV image
         run: |
-          docker tag "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:${{ steps.vars.outputs.TAG }}" "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:dev"
-
-      - name: Push dev tag
-        run: |
+          docker build \
+            --build-arg BUILD_ENV=dev \
+            -t "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:dev" .
           docker push "${{ secrets.ACR_LOGIN_SERVER }}/frifood-frontend:dev"

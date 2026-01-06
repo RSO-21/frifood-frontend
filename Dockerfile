@@ -9,7 +9,19 @@ RUN npm ci
 
 # Build Angular app
 COPY FriFood/ ./
-RUN npx ng build --configuration docker
+
+# Which environment to bake into the SPA bundle.
+# - "dev": build with Angular "docker" configuration (uses environment.docker.ts)
+# - "production": build with Angular "production" configuration (uses environment.ts)
+ARG BUILD_ENV=dev
+
+RUN if [ "$BUILD_ENV" = "production" ]; then \
+		cp src/environments/environment.prod.example.ts src/environments/environment.ts \
+		&& npx ng build --configuration production; \
+	else \
+		cp src/environments/environment.dev.example.ts src/environments/environment.docker.ts \
+		&& npx ng build --configuration docker; \
+	fi
 
 # Runtime stage
 FROM nginx:1.27-alpine
