@@ -1,0 +1,32 @@
+<div class="container">
+  <h2>Najdene ponudbe v tvoji bližini.</h2>
+
+  @if (partners().length === 0) {
+  <div class="empty-state">
+    <p>Ni najdenih ponudb v bližini.</p>
+  </div>
+  } @else {
+  <div class="row">
+    @for (partner of partners(); track partner.id) {
+    <div>
+      <h3 (click)="openPartner(partner)">
+        {{ partner.name }}
+      </h3>
+
+      @if (distanceTo(partner) !== null) {
+      <p>{{ distanceTo(partner) }} km</p>
+      }
+
+      <p>{{ partner.address }}, {{ partner.city }}</p>
+
+      <!-- PREVIEW: only top 2 -->
+      <app-offers [offers]="offersForPartner(partner)" [limit]="2"> </app-offers>
+
+      <button (click)="openPartner(partner)">Show all offers</button>
+
+      <hr />
+    </div>
+    }
+  </div>
+  }
+</div>

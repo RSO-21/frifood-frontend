@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Offers } from './offers';
+import { PartnerDashboardModal } from './partner-dashboard-modal';
 
-describe('Offers', () => {
-  let component: Offers;
-  let fixture: ComponentFixture<Offers>;
+describe('PartnerDashboardModal', () => {
+  let component: PartnerDashboardModal;
+  let fixture: ComponentFixture<PartnerDashboardModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Offers]
+      imports: [PartnerDashboardModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Offers);
+    fixture = TestBed.createComponent(PartnerDashboardModal);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
