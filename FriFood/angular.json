@@ -36,9 +36,7 @@
             "ssr": {
               "entry": "src/server.ts"
             },
-            "scripts": [
-                "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-            ]
+            "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]
           },
           "configurations": {
             "production": {
@@ -104,9 +102,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.less"
-            ]
+            "styles": ["src/styles.less"]
           }
         }
       }

@@ -9,24 +9,33 @@
     <div class="d-flex align-items-center gap-3">
       @if (!auth.isAuthenticated()) {
       <!-- User is NOT logged in -->
-      <button (click)="login.triggerLogin()">Log in</button>
-      <button (click)="login.triggerSignup()">Sign up</button>
+      <button class="btn btn-outline-dark" (click)="login.triggerLogin()">Log in</button>
+      <button class="btn btn-outline-dark" (click)="login.triggerSignup()">Sign up</button>
       } @else if (auth.isAuthenticated()) {
       <!-- User IS logged in -->
       @if(userService.user()?.partner_id) {
+      <!-- Cart icon -->
+      <button class="cart-button btn btn-outline-dark" (click)="goToCart()">
+        <i class="bi bi-cart"></i>
+      </button>
       <button
         type="button"
         class="btn btn-outline-dark"
         data-bs-toggle="modal"
-        data-bs-target="#partnerDashboardModal"
+        data-bs-target="#partnerDashboardModal-navbar"
+        (click)="loadPartnerInfo()"
       >
         Moja ponudba
       </button>
       }
-      <button (click)="auth.logout()">Log out</button>
+      <button class="btn btn-outline-dark" (click)="auth.logout()">Log out</button>
       }
     </div>
   </div>
 </nav>
 <app-login-modals></app-login-modals>
-<app-partner-dashboard-modal></app-partner-dashboard-modal>
+<app-partner-dashboard-modal
+  [partner]="partnerData"
+  [isOwnerPartner]="true"
+  [initiatingComponent]="'navbar'"
+></app-partner-dashboard-modal>

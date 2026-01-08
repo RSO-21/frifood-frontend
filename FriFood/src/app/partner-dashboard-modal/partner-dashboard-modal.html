@@ -1,4 +1,9 @@
-<div class="modal fade" id="partnerDashboardModal" tabindex="-1" aria-hidden="true">
+<div
+  class="modal fade"
+  [id]="'partnerDashboardModal-' + initiatingComponent"
+  tabindex="-1"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <!-- Header -->
@@ -9,69 +14,150 @@
 
       <!-- Body -->
       <div class="modal-body">
-        <!-- Your Business -->
-        <section>
-          <h6>Your Business</h6>
+        <!-- ───────── Partner info ───────── -->
+        @if (partner) {
+        <section class="mb-4">
+          <strong>{{ partner.name }}</strong>
+          <div class="text-muted">{{ partner.address }}</div>
+        </section>
+        }
 
-          <div>
-            <img src="https://via.placeholder.com/120" alt="Business image" />
-            <div>
-              <strong>Bella Bakery</strong>
-              <div>Bakery</div>
+        <!-- ───────── Add offer button (OWNER ONLY) ───────── -->
+        @if (isOwnerPartner) {
+        <div class="mb-3">
+          <button
+            class="btn btn-sm btn-primary"
+            (click)="startAddOffer()"
+            [disabled]="editingOfferId !== null"
+          >
+            + Dodaj ponudbo
+          </button>
+        </div>
+        }
+
+        <!-- ───────── New offer form ───────── -->
+        @if (editingOfferId === 'new') {
+        <div class="border rounded p-3 mb-4 bg-light">
+          <h6>Nova ponudba</h6>
+
+          <input class="form-control mb-2" placeholder="Title" [(ngModel)]="draftOffer.title" />
+
+          <textarea
+            class="form-control mb-2"
+            placeholder="Description"
+            [(ngModel)]="draftOffer.description"
+          ></textarea>
+
+          <div class="row g-2 mb-2">
+            <div class="col">
+              <label class="small text-muted">Originala cena (€)</label>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Original price (€)"
+                [(ngModel)]="draftOffer.price_original"
+              />
+            </div>
+            <div class="col">
+              <label class="small text-muted">Znižana cena (€)</label>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Discounted price (€)"
+                [(ngModel)]="draftOffer.price_discounted"
+              />
             </div>
           </div>
-        </section>
 
-        <hr />
-
-        <!-- Your Offers -->
-        <section>
-          <div class="d-flex justify-content-between align-items-center">
-            <h6>Your Offers</h6>
-            <button type="button">+ Add New Offer</button>
-          </div>
-
-          <!-- Offer item -->
-          <div>
-            <strong>Surprise Pastry Box</strong>
-            <div>
-              <span>€12.00 → €3.99</span>
-              <span>-67%</span>
-              <span>Until 18:00</span>
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <label class="small text-muted">Rok poteka:</label>
+              <input type="date" class="form-control" [(ngModel)]="draftOffer.expiry_date" />
             </div>
-            <div>3 available</div>
           </div>
 
-          <hr />
+          <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" (click)="saveOffer()">Shrani</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Prekliči</button>
+          </div>
+        </div>
+        }
 
-          <div>
-            <strong>Bread Bundle</strong>
-            <div>
-              <span>€8.00 → €2.99</span>
-              <span>-63%</span>
-              <span>Until 19:00</span>
+        <!-- ───────── Offers list ───────── -->
+        @for (offer of offers; track offer.id) {
+
+        <div class="border rounded p-3 mb-3">
+          <!-- EDIT MODE -->
+          @if (editingOfferId === offer.id) {
+
+          <h6>Edit Offer</h6>
+
+          <input class="form-control mb-2" [(ngModel)]="draftOffer.title" />
+
+          <textarea class="form-control mb-2" [(ngModel)]="draftOffer.description"></textarea>
+
+          <div class="row g-2 mb-2">
+            <div class="col">
+              <input type="number" class="form-control" [(ngModel)]="draftOffer.price_original" />
             </div>
-            <div>5 available</div>
+            <div class="col">
+              <input type="number" class="form-control" [(ngModel)]="draftOffer.price_discounted" />
+            </div>
           </div>
-        </section>
 
-        <hr />
+          <div class="row g-2 mb-3">
+            <div class="col">
+              <input type="date" class="form-control" [(ngModel)]="draftOffer.expiry_date" />
+            </div>
+          </div>
 
-        <!-- Stats -->
-        <section>
-          <div>
-            <strong>2</strong>
-            <div>Active Offers</div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" (click)="saveOffer()">Shrani</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Prekliči</button>
           </div>
-          <div>
-            <strong>8</strong>
-            <div>Items Available</div>
+
+          }
+          <!-- READ MODE -->
+          @else {
+
+          <strong>{{ offer.title }}</strong>
+
+          @if (offer.description) {
+          <div class="text-muted small">
+            {{ offer.description }}
           </div>
-          <div>
-            <strong>€49.08</strong>
-            <div>Total Savings</div>
+          }
+
+          <div class="small mt-1">
+            <strong>€{{ offer.price_discounted }}</strong>
+            <span class="text-muted ms-2">
+              <s>€{{ offer.price_original }}</s>
+            </span>
+            @if (offer.price_original > 0) {
+            <span class="text-success ms-2"> -{{ discountPercent(offer) }}% </span>
+            }
           </div>
-        </section>
+
+          <div class="small text-muted">
+            Rok poteka:
+            {{ offer.expiry_date | date : 'longDate' }}
+          </div>
+
+          <!-- OWNER ACTIONS -->
+          @if (isOwnerPartner) {
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-outline-secondary btn-sm" (click)="startEditOffer(offer)">
+              ✏️ Uredi
+            </button>
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteOffer(offer.id)">
+              🗑 Izbriši
+            </button>
+          </div>
+          } }
+        </div>
+        } @if (!offers.length) {
+        <div class="text-muted fst-italic">Ponudb ni na voljo.</div>
+        }
       </div>
     </div>
   </div>

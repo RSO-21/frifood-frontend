@@ -1,20 +1,22 @@
 export interface Offer {
   id: number;
   partner_id: string;
-
   title: string;
   description?: string;
-
   price_original: number;
   price_discounted: number;
+  expiry_date: string; // ISO date
+  status?: string;
+  tenant_id?: string;
+}
 
-  quantity_total: number;
-  quantity_available: number;
-
-  pickup_from: string; // ISO datetime
-  pickup_until: string; // ISO datetime
-
-  status: string;
+export interface OfferUpdate {
+  title?: string;
+  description?: string;
+  price_original?: number;
+  price_discounted?: number;
+  expiry_date?: string; // ISO date
+  status?: string;
   tenant_id?: string;
 }
 
@@ -72,6 +74,7 @@ export interface User {
   updated_at: string; // ISO datetime
 
   partner_id?: string; // FK to Partner (nullable)
+  cart?: number[]; // Array of Offer IDs
 }
 
 export interface UserUpdate {
@@ -82,4 +85,5 @@ export interface UserUpdate {
   longitude?: number;
   latitude?: number;
   partner_id?: string;
+  cart?: number[];
 }

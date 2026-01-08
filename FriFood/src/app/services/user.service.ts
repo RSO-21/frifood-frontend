@@ -16,6 +16,16 @@ export class UserService {
   user = this._user.asReadonly();
   user_id = computed(() => this.user()?.id || '');
   user_partner_id = computed(() => this.user()?.partner_id || null);
+  user_location = computed(() => {
+    const user = this.user();
+    if (user && user.latitude !== null && user.longitude !== null) {
+      return {
+        latitude: user.latitude,
+        longitude: user.longitude,
+      };
+    }
+    return null;
+  });
 
   /** Fetch user by Keycloak ID */
   fetchById(userId: string) {
