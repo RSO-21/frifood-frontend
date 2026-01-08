@@ -8,21 +8,31 @@
   } @else {
   <div class="row">
     @for (partner of partners(); track partner.id) {
-    <div>
-      <h3 (click)="openPartner(partner)">
+    <div
+      (click)="openPartner(partner)"
+      data-bs-toggle="modal"
+      data-bs-target="#partnerDashboardModal-partners"
+    >
+      <h3>
         {{ partner.name }}
       </h3>
 
       @if (distanceTo(partner) !== null) {
-      <p>{{ distanceTo(partner) }} km</p>
+      <p>{{ distanceTo(partner) }}</p>
       }
 
       <p>{{ partner.address }}, {{ partner.city }}</p>
 
       <!-- PREVIEW: only top 2 -->
-      <app-offers [offers]="offersForPartner(partner)" [limit]="2"> </app-offers>
+      <app-offers
+        [limit]="2"
+        [partner]="partner"
+        (click)="openPartner(partner)"
+        data-bs-toggle="modal"
+        data-bs-target="#partnerDashboardModal-partners"
+      ></app-offers>
 
-      <button (click)="openPartner(partner)">Show all offers</button>
+      <button>Show all offers</button>
 
       <hr />
     </div>
@@ -30,3 +40,8 @@
   </div>
   }
 </div>
+<app-partner-dashboard-modal
+  [isOwnerPartner]="false"
+  [partner]="partnerToOpen"
+  [initiatingComponent]="'partners'"
+></app-partner-dashboard-modal>

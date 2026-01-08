@@ -7,14 +7,7 @@
     @if (offer.description) {
     <small>{{ offer.description }}</small
     ><br />
-    } Pick up:
-    {{ offer.pickup_from | date : 'shortTime' }}
-    –
-    {{ offer.pickup_until | date : 'shortTime' }}<br />
-
-    Available: {{ offer.quantity_available }}<br />
-
-    Price:
+    } Price:
     {{ offer.price_discounted }} € (was {{ offer.price_original }} €, -{{
       discountPercent(offer)
     }}%)
