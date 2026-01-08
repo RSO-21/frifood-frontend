@@ -1,19 +1,30 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, inject } from '@angular/core';
+import { Offer, Partner } from '../models';
 
-import { DatePipe } from '@angular/common';
-import { Offer } from '../models';
+import { OfferService } from '../services/offers.service';
 
 @Component({
   selector: 'app-offers',
   standalone: true,
   templateUrl: './offers.html',
-  imports: [DatePipe],
 })
 export class OffersComponent {
-  @Input({ required: true }) offers: Offer[] = [];
-
-  // NEW: control how many to show
+  @Input({ required: true }) partner: Partner | null = null;
+  @Input() isOwnerView: boolean = false;
+  offers: Offer[] = [];
   @Input() limit: number | null = null;
+  offerService = inject(OfferService);
+  cdr = inject(ChangeDetectorRef);
+
+  ngOnInit() {
+    console.log('OffersComponent initialized with partner:', this.partner);
+    if (this.partner) {
+      this.offerService.listOffersByPartner(this.partner.id).subscribe((offers) => {
+        this.offers = offers;
+        this.cdr.detectChanges();
+      });
+    }
+  }
 
   get visibleOffers(): Offer[] {
     let activeOffers = this.offers.filter((o) => o.status === 'ACTIVE');
