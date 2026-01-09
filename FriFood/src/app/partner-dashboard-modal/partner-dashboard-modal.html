@@ -153,6 +153,12 @@
               🗑 Izbriši
             </button>
           </div>
+          } @if (!isOwnerPartner) {
+          <div class="mt-2">
+            <button class="btn btn-sm btn-success" (click)="addToCart(offer)">
+              🛒 Dodaj v košarico
+            </button>
+          </div>
           } }
         </div>
         } @if (!offers.length) {

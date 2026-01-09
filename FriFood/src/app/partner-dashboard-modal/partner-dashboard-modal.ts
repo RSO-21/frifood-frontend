@@ -4,6 +4,7 @@ import { Offer, Partner } from '../models';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OfferService } from '../services/offers.service';
+import { UserService } from './../services/user.service';
 
 @Component({
   selector: 'app-partner-dashboard-modal',
@@ -23,6 +24,7 @@ export class PartnerDashboardModal {
 
   offerService = inject(OfferService);
   cdr = inject(ChangeDetectorRef);
+  UserService = inject(UserService);
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -70,7 +72,6 @@ export class PartnerDashboardModal {
     if (!this.partner) return;
 
     if (this.editingOfferId === 'new') {
-      console.log('Creating offer', this.draftOffer);
       this.offerService.createOffer(this.draftOffer as Offer).subscribe(() => {
         this.cancelEdit();
         this.loadOffers();
@@ -93,5 +94,9 @@ export class PartnerDashboardModal {
     return Math.round(
       ((offer.price_original - offer.price_discounted) / offer.price_original) * 100
     );
+  }
+
+  addToCart(offer: Offer) {
+    this.UserService.addOfferToCart(this.UserService.user_id(), offer.id);
   }
 }

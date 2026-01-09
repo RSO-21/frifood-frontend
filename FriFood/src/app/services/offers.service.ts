@@ -81,7 +81,11 @@ export class OfferService {
     });
   }
 
-  getOffersByIds(ids: number[]) {
-    return this.http.post<Offer[]>('/api/offers/bulk', { ids });
+  getOffersByIds(ids: number[], tenantId?: string) {
+    return this.http.post<Offer[]>(
+      `${this.API_URL}/offers/bulk`,
+      { ids },
+      { headers: this.headers(tenantId) }
+    );
   }
 }

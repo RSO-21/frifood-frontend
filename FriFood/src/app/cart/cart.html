@@ -1,1 +1,52 @@
-<p>cart works!</p>
+@if(!loading()){ @if (offers().length === 0) {
+<p class="empty-cart">Your cart is empty.</p>
+} @for (offer of offers(); track offer.id) {
+<div class="cart-card">
+  <div class="cart-card-header">
+    <h3>{{ offer.title }}</h3>
+    <span class="partner">Partner: {{ offer.partner_id }}</span>
+  </div>
+
+  <p class="description">{{ offer.description }}</p>
+
+  <div class="price-row">
+    <span class="original-price">
+      {{ offer.price_original | currency }}
+    </span>
+
+    <span class="discounted-price">
+      {{ offer.price_discounted | currency }}
+    </span>
+  </div>
+
+  <div class="quantity-row">
+    <button
+      class="qty-btn"
+      (click)="userService.removeOfferFromCart(userService.user_id(), offer.id)"
+    >
+      −
+    </button>
+
+    <span class="qty">
+      {{ cartQuantities().get(offer.id) }}
+    </span>
+
+    <button class="qty-btn" (click)="userService.addOfferToCart(userService.user_id(), offer.id)">
+      +
+    </button>
+  </div>
+</div>
+} @if (offers().length > 0) {
+<div class="cart-summary">
+  <div class="total">
+    <span>Total</span>
+    <span class="total-price">
+      {{ cartTotal() | currency }}
+    </span>
+  </div>
+
+  <button class="checkout-btn">Proceed to payment</button>
+</div>
+} } @else {
+<p>Loading cart…</p>
+}
