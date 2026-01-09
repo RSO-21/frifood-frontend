@@ -1,12 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 
+import { CurrencyPipe } from '@angular/common';
 import { Offer } from './../models';
 import { OfferService } from '../services/offers.service';
 import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-cart',
-  imports: [],
+  imports: [CurrencyPipe],
   templateUrl: './cart.html',
   styleUrl: './cart.less',
 })
@@ -14,33 +15,51 @@ export class Cart {
   userService = inject(UserService);
   offerService = inject(OfferService);
 
-  loading = true;
-  error = '';
-  offers: Offer[] = [];
+  // local state as signals
+  loading = signal(true);
+  error = signal('');
+  offers = signal<Offer[]>([]);
 
-  ngOnInit(): void {
-    this.loadCartOffers();
-  }
+  cartIds = computed(() => this.userService.user_cart());
 
-  private loadCartOffers(): void {
-    const user = this.userService.user();
-
-    if (!user || !user.cart || user.cart.length === 0) {
-      this.loading = false;
-      this.offers = [];
-      return;
+  cartQuantities = computed(() => {
+    const map = new Map<number, number>();
+    for (const id of this.cartIds()) {
+      map.set(id, (map.get(id) ?? 0) + 1);
     }
+    return map;
+  });
 
-    this.offerService.getOffersByIds(user.cart).subscribe({
-      next: (offers) => {
-        this.offers = offers;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = 'Failed to load cart';
-        this.loading = false;
-      },
+  cartTotal = computed(() =>
+    this.offers().reduce((sum, offer) => {
+      const qty = this.cartQuantities().get(offer.id) ?? 0;
+      return sum + offer.price_discounted * qty;
+    }, 0)
+  );
+
+  constructor() {
+    effect(() => {
+      const cart = this.cartIds();
+
+      this.loading.set(true);
+      this.error.set('');
+
+      if (!cart || cart.length === 0) {
+        this.offers.set([]);
+        this.loading.set(false);
+        return;
+      }
+
+      this.offerService.getOffersByIds(cart).subscribe({
+        next: (offers) => {
+          this.offers.set(offers);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Failed to load cart');
+          this.loading.set(false);
+        },
+      });
     });
   }
 }
