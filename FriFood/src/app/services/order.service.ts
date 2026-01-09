@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 export class OrderService {
   private readonly http = inject(HttpClient);
 
-  private readonly GRAPHQL_URL = 'http://localhost:9000/graphql';
+  private readonly GRAPHQL_URL = `${environment.apiGatewayUrl}/graphql`;
 
   private headers(tenantId?: string) {
     let headers = new HttpHeaders({
@@ -71,7 +71,7 @@ export class OrderService {
   `;
 
     return this.http.post<any>(
-      'http://localhost:9000/graphql',
+      this.GRAPHQL_URL,
       {
         query: mutation,
         variables: {
