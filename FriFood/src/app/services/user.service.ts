@@ -26,6 +26,9 @@ export class UserService {
     }
     return null;
   });
+  user_cart = computed(() => {
+    return this.user()?.cart || [];
+  });
 
   /** Fetch user by Keycloak ID */
   fetchById(userId: string) {
@@ -52,6 +55,31 @@ export class UserService {
       },
       error: (err) => {
         console.error('Failed to update user', err);
+      },
+    });
+  }
+
+  /** Add offer to cart (duplicates allowed) */
+  addOfferToCart(userId: string, offerId: number) {
+    console.log('Adding offer to cart:', offerId);
+    return this.http.post<DbUser>(`${this.API_URL}/users/${userId}/cart/${offerId}`, {}).subscribe({
+      next: (user) => {
+        this._user.set(user);
+      },
+      error: (err) => {
+        console.error('Failed to add offer to cart', err);
+      },
+    });
+  }
+
+  /** Remove ONE occurrence of offer from cart */
+  removeOfferFromCart(userId: string, offerId: number) {
+    return this.http.delete<DbUser>(`${this.API_URL}/users/${userId}/cart/${offerId}`).subscribe({
+      next: (user) => {
+        this._user.set(user);
+      },
+      error: (err) => {
+        console.error('Failed to remove offer from cart', err);
       },
     });
   }
