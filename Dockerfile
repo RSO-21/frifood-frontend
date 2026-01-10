@@ -39,7 +39,9 @@ COPY --from=build /app/dist/FriFood/browser/ /usr/share/nginx/html/
 
 # Runtime env injection for nginx image (runs before nginx starts)
 COPY docker/20-runtime-env.sh /docker-entrypoint.d/20-runtime-env.sh
-RUN chmod +x /docker-entrypoint.d/20-runtime-env.sh
+# Ensure script is executable and has Unix LF line endings (Windows CRLF can break /bin/sh)
+RUN chmod +x /docker-entrypoint.d/20-runtime-env.sh \
+	&& sed -i 's/\r$//' /docker-entrypoint.d/20-runtime-env.sh
 
 EXPOSE 80
 
