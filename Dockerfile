@@ -37,6 +37,10 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy browser build output (Angular SSR build produces dist/<app>/browser)
 COPY --from=build /app/dist/FriFood/browser/ /usr/share/nginx/html/
 
+# Runtime env injection for nginx image (runs before nginx starts)
+COPY docker/20-runtime-env.sh /docker-entrypoint.d/20-runtime-env.sh
+RUN chmod +x /docker-entrypoint.d/20-runtime-env.sh
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

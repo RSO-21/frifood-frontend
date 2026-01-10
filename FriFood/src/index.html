@@ -6,6 +6,23 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Runtime config (sets window.__ENV.*) -->
+    <script src="/assets/config.js"></script>
+    <!-- Inject Google Maps script at runtime using window.__ENV.GOOGLE_MAPS_API_KEY -->
+    <script>
+      (function () {
+        var key = window.__ENV && window.__ENV.GOOGLE_MAPS_API_KEY;
+        if (key && key !== "__GOOGLE_MAPS_API_KEY__") {
+          var s = document.createElement("script");
+          s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(key);
+          s.async = true;
+          s.defer = true;
+          document.head.appendChild(s);
+        } else {
+          console.warn("Google Maps API key not set; skipping script load");
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>
