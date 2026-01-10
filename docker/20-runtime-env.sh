@@ -1,10 +1,14 @@
 #!/bin/sh
 set -e
-CONFIG_JS="/usr/share/nginx/html/assets/config.js"
-if [ -n "$GOOGLE_MAPS_API_KEY" ] && [ -f "$CONFIG_JS" ]; then
-  echo "Injecting GOOGLE_MAPS_API_KEY into runtime config..."
-  # Replace placeholder with actual key
-  sed -i "s/__GOOGLE_MAPS_API_KEY__/${GOOGLE_MAPS_API_KEY}/g" "$CONFIG_JS"
-else
-  echo "GOOGLE_MAPS_API_KEY not set or config.js missing; leaving placeholder."
-fi
+
+ASSETS_DIR="/usr/share/nginx/html/assets"
+CONFIG_JS="$ASSETS_DIR/config.js"
+
+mkdir -p "$ASSETS_DIR"
+
+echo "Writing runtime config to $CONFIG_JS"
+
+cat > "$CONFIG_JS" <<EOF
+window.__ENV = window.__ENV || {};
+window.__ENV.GOOGLE_MAPS_API_KEY = "${GOOGLE_MAPS_API_KEY:-}";
+EOF
