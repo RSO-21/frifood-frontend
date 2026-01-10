@@ -18,14 +18,14 @@ ARG BUILD_ENV=local
 
 RUN if [ "$BUILD_ENV" = "production" ]; then \
 		cp src/environments/environment.prod.example.ts src/environments/environment.ts \
-		&& npx ng build --configuration production --prerender=false; \
+		&& npx ng build --configuration production \
 	elif [ "$BUILD_ENV" = "dev" ]; then \
 		cp src/environments/environment.dev.example.ts src/environments/environment.ts \
-		&& npx ng build --configuration production --prerender=false; \
+		&& npx ng build --configuration production \
 	else \
 		cp src/environments/environment.docker.example.ts src/environments/environment.ts \
 		&& cp src/environments/environment.docker.example.ts src/environments/environment.docker.ts \
-		&& npx ng build --configuration docker --prerender=false; \
+		&& npx ng build --configuration docker \
 	fi
 
 # Runtime stage
