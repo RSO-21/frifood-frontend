@@ -13,4 +13,5 @@ export const environment = {
   paymentServiceUrl: 'http://localhost:8003',
   partnerServiceUrl: 'http://localhost:8000',
   notificationServiceUrl: 'http://localhost:8006',
+  reviewServiceUrl: 'http://localhost:8007'
 } as const;
