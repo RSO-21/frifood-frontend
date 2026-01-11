@@ -123,7 +123,7 @@ export class Cart {
         const createdOrderIds = responses.map((r) => r.data.createOrder.id);
         console.log('createdOrderIds', createdOrderIds);
 
-        // this.userService.clearCart(this.userService.user_id());
+        this.userService.clearCart(this.userService.user_id());
 
         this.router.navigate(['/payment'], {
           state: { orderIds: createdOrderIds },
