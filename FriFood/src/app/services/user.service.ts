@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class UserService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.userServiceUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
 
   // store full DB user
   private readonly _user = signal<DbUser | null>(null);
@@ -32,7 +32,7 @@ export class UserService {
 
   /** Fetch user by Keycloak ID */
   fetchById(userId: string) {
-    return this.http.get<DbUser>(`${this.API_URL}/users/${userId}`);
+    return this.http.get<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}`);
   }
 
   /** Load and store user */
@@ -49,7 +49,7 @@ export class UserService {
   }
 
   updateUser(userId: string, updates: Partial<UserUpdate>) {
-    return this.http.patch<DbUser>(`${this.API_URL}/users/${userId}`, updates).subscribe({
+    return this.http.patch<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}`, updates).subscribe({
       next: (user) => {
         this._user.set(user);
       },
@@ -62,7 +62,7 @@ export class UserService {
   /** Add offer to cart (duplicates allowed) */
   addOfferToCart(userId: string, offerId: number) {
     console.log('Adding offer to cart:', offerId);
-    return this.http.post<DbUser>(`${this.API_URL}/users/${userId}/cart/${offerId}`, {}).subscribe({
+    return this.http.post<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`, {}).subscribe({
       next: (user) => {
         this._user.set(user);
         alert('Item added to cart!');
@@ -75,7 +75,7 @@ export class UserService {
 
   /** Remove ONE occurrence of offer from cart */
   removeOfferFromCart(userId: string, offerId: number) {
-    return this.http.delete<DbUser>(`${this.API_URL}/users/${userId}/cart/${offerId}`).subscribe({
+    return this.http.delete<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`).subscribe({
       next: (user) => {
         this._user.set(user);
       },
