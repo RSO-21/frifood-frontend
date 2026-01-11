@@ -4,6 +4,18 @@
   type="text"
   class="form-control border-start-0"
   placeholder="Vnesi naslov ali lokacijo"
+  (input)="onAddressInput(addressInput.value)"
 />
+
+<!-- autocomplete dropdown -->
+@if (suggestions.length > 0) {
+<div class="autocomplete-menu shadow">
+  @for (s of suggestions; track s.place_id) {
+  <div class="autocomplete-item" (click)="selectSuggestion(s)">
+    {{ s.description }}
+  </div>
+  }
+</div>
+}
 
 <app-partners></app-partners>

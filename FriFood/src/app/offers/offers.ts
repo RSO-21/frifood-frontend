@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Offer, Partner } from '../models';
 
 import { OfferService } from '../services/offers.service';
@@ -20,6 +20,7 @@ export class OffersComponent {
     if (this.partner) {
       this.offerService.listOffersByPartner(this.partner.id).subscribe((offers) => {
         this.offers = offers;
+
         this.cdr.detectChanges();
       });
     }

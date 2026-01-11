@@ -1,19 +1,18 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   PLATFORM_ID,
   ViewChild,
-  computed,
   effect,
   inject,
 } from '@angular/core';
 
-import { GoogleMapsLoaderService } from '../services/googlemapsloader';
-import { OrderService } from '../services/order.service';
+import { HttpClient } from '@angular/common/http';
 import { PartnerService } from '../services/partner.service';
 import { Partners } from '../partners/partners';
-import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { environment } from '../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
@@ -26,105 +25,97 @@ export class Home {
   @ViewChild('addressInput', { static: true })
   addressInput!: ElementRef<HTMLInputElement>;
 
-  private autocomplete: any;
-  private selectedPlace: any;
-  private addressSelected: boolean = false;
-
-  private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
   private partnerService = inject(PartnerService);
-
   private userService = inject(UserService);
-  private gmaps = inject(GoogleMapsLoaderService);
+  private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
-  user = this.userService.user;
+  suggestions: { description: string; place_id: string }[] = [];
+  loading = false;
 
   constructor() {
+    // load nearby partners if user already has location
     effect(() => {
       const user = this.userService.user();
+      if (!user || !user.latitude || !user.longitude) return;
 
-      if (!user) return;
-
-      if (user.latitude && user.longitude) {
-        this.partnerService
-          .getNearbyPartners({
-            lat: user.latitude,
-            lng: user.longitude,
-            radius_km: 5,
-          })
-          .subscribe((partners) => {
-            this.partnerService.setPartners(partners);
-          });
-      }
+      this.partnerService
+        .getNearbyPartners({
+          lat: user.latitude,
+          lng: user.longitude,
+          radius_km: 5,
+        })
+        .subscribe((partners) => {
+          this.partnerService.setPartners(partners);
+        });
     });
   }
 
-  async ngAfterViewInit() {
-    //  Skip on server
-    if (!isPlatformBrowser(this.platformId)) {
+  // -----------------------------
+  // Autocomplete input
+  // -----------------------------
+  onAddressInput(value: string) {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    if (!value || value.length < 2) {
+      this.suggestions = [];
       return;
     }
 
-    if (this.autocomplete) {
-      return; // already initialized
-    }
-    var g = (window as any).google;
-    if (!g?.maps?.places) {
-      try {
-        await this.gmaps.loadPlaces();
-        g = (window as any).google;
-      } catch (e) {
-        console.error('Failed to load Google Maps Places', e);
-      }
-    }
-
-    this.autocomplete = new g.maps.places.Autocomplete(this.addressInput.nativeElement, {
-      types: ['geocode'],
-      componentRestrictions: { country: 'si' }, // optional
-    });
-
-    this.autocomplete.addListener('place_changed', () => {
-      const place = this.autocomplete.getPlace();
-
-      // reject free text
-      if (!place?.geometry) {
-        this.addressInput.nativeElement.value = '';
-        this.selectedPlace = null;
-        return;
-      }
-
-      this.selectedPlace = place;
-      this.findOffers();
-    });
-
-    // prevent Enter key submitting garbage
-    this.addressInput.nativeElement.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') e.preventDefault();
-      this.addressSelected = false;
-    });
+    this.http
+      .get<{ description: string; place_id: string }[]>(
+        `${environment.userServiceUrl}/location/autocomplete`,
+        { params: { input: value } }
+      )
+      .subscribe({
+        next: (res) => (this.suggestions = res),
+        error: () => (this.suggestions = []),
+      });
   }
 
-  findOffers(): void {
-    if (!this.selectedPlace) {
-      alert('Izberi naslov iz seznama.');
-      return;
-    }
+  // -----------------------------
+  // User picked suggestion
+  // -----------------------------
+  selectSuggestion(s: { description: string; place_id: string }) {
+    this.addressInput.nativeElement.value = s.description;
+    this.suggestions = [];
 
-    const location = this.selectedPlace.geometry.location;
+    this.http
+      .get<{
+        latitude: number;
+        longitude: number;
+        formatted_address: string;
+      }>(`${environment.userServiceUrl}/location/place`, {
+        params: { place_id: s.place_id },
+      })
+      .subscribe({
+        next: (res) => this.applyLocation(res),
+        error: () => alert('Lokacije ni bilo mogoče razrešiti'),
+      });
+  }
 
-    const lat = location.lat();
-    const lng = location.lng();
-
-    if (lat && lng) {
-      this.partnerService.getNearbyPartners({ lat, lng, radius_km: 5 }).subscribe((partners) => {
+  // -----------------------------
+  // Apply resolved location
+  // -----------------------------
+  private applyLocation(res: { latitude: number; longitude: number; formatted_address: string }) {
+    const { latitude, longitude, formatted_address } = res;
+    console.log('Applying location, lat, lng', latitude, longitude);
+    this.partnerService
+      .getNearbyPartners({
+        lat: latitude,
+        lng: longitude,
+        radius_km: 5,
+      })
+      .subscribe((partners) => {
         this.partnerService.setPartners(partners);
       });
-      this.userService.updateUser(this.userService.user_id(), {
-        latitude: lat,
-        longitude: lng,
-        address: this.selectedPlace.formatted_address,
-      });
-    } else {
-      this.partnerService.listPartners().subscribe((partners) => {});
-    }
+
+    // persist on user
+    this.userService.updateUser(this.userService.user_id(), {
+      latitude,
+      longitude,
+      address: formatted_address,
+    });
   }
 }
