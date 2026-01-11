@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
+import { PartnerRating } from '../models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -12,5 +13,12 @@ export class ReviewService {
 
   createReview(input: { order_id: number; user_id: string; rating: number; comment?: string }) {
     return this.http.post(`${this.API_URL}/reviews`, input);
+  }
+
+  getPartnersRatings(partnerIds: string[]) {
+    const params = partnerIds.join(',');
+    return this.http.get<Record<string, PartnerRating>>(`${this.API_URL}/partners/ratings`, {
+      params: { partner_ids: params },
+    });
   }
 }

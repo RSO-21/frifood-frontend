@@ -1,37 +1,9 @@
 @if (loading) {
-<p>Loading payment…</p>
+<button (click)="confirm()">Pay</button>
+
 } @else { @if (paymentConfirmed) {
 <h2>Payment Successful!</h2>
 <p>Thank you for your purchase. Your order has been confirmed.</p>
-
-<!-- Leave a review -->
-<div class="review-section">
-  <h3>Leave a review</h3>
-
-  <label>
-    Rating
-    <select [(ngModel)]="rating">
-      <option [value]="5">★★★★★</option>
-      <option [value]="4">★★★★☆</option>
-      <option [value]="3">★★★☆☆</option>
-      <option [value]="2">★★☆☆☆</option>
-      <option [value]="1">★☆☆☆☆</option>
-    </select>
-  </label>
-
-  <label>
-    Comment (optional)
-    <textarea rows="3" [(ngModel)]="comment" placeholder="How was your experience?"></textarea>
-  </label>
-
-  <button (click)="submitReview()" [disabled]="reviewSubmitting || reviewSubmitted">
-    Submit review
-  </button>
-
-  @if (reviewSubmitted) {
-  <p class="success">Thanks for your feedback! ⭐</p>
-  }
-</div>
 
 } @else {
 <h2>Payment Failed</h2>

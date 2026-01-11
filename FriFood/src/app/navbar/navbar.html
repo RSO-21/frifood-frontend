@@ -1,6 +1,6 @@
 <nav class="navbar navbar-light sticky-top">
   <div class="container">
-    <a>Frifood</a>
+    <a routerLink="/">Frifood</a>
     @if(userService.user()?.address) {
     <div>
       <span>{{ userService.user()?.address }}</span>
@@ -13,11 +13,39 @@
       <button class="btn btn-outline-dark" (click)="login.triggerSignup()">Sign up</button>
       } @else if (auth.isAuthenticated()) {
       <!-- User IS logged in -->
-      @if(userService.user()?.partner_id) {
+
       <!-- Cart icon -->
       <button class="cart-button btn btn-outline-dark" (click)="goToCart()">
         <i class="bi bi-cart"></i>
       </button>
+      <div class="notification-dropdown position-relative">
+        <button class="btn btn-outline-dark position-relative" (click)="openNotifications()">
+          <i class="bi bi-bell"></i>
+
+          @if (unreadCount() > 0) {
+          <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          >
+            {{ unreadCount() }}
+          </span>
+          }
+        </button>
+
+        @if (showDropdown) {
+        <div class="notification-menu shadow">
+          @if (notifications().length === 0) {
+          <div class="notification-item muted">No notifications</div>
+
+          } @else { @for (n of notifications(); track n.id) {
+          <div class="notification-item" [class.unread]="!n.is_read" (click)="markAsRead(n)">
+            <div class="message">{{ n.message }}</div>
+          </div>
+          } }
+        </div>
+        }
+      </div>
+
+      @if(userService.user()?.partner_id) {
       <button
         type="button"
         class="btn btn-outline-dark"
@@ -28,6 +56,11 @@
         Moja ponudba
       </button>
       }
+      <!-- Profile button -->
+      <button class="btn btn-outline-dark" title="Profile" (click)="goToProfile()">
+        <i class="bi bi-person"></i>
+      </button>
+
       <button class="btn btn-outline-dark" (click)="auth.logout()">Log out</button>
       }
     </div>

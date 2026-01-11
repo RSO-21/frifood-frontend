@@ -1,9 +1,12 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, PLATFORM_ID, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { PaymentService } from '../services/payment.service';
 import { ReviewService } from '../services/review.service';
+import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { forkJoin } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-payment',
@@ -15,6 +18,7 @@ export class Payment {
   paymentService = inject(PaymentService);
   userService = inject(UserService);
   reviewService = inject(ReviewService);
+  platformId = inject(PLATFORM_ID);
   loading = true;
   paymentConfirmed = false;
   cdr = inject(ChangeDetectorRef);
@@ -30,28 +34,41 @@ export class Payment {
   // you must already have this from checkout / route / state
   orderId!: number;
 
+  router = inject(Router);
+
+  orderIds: number[] = [];
+
   ngOnInit() {
-    console.log('Starting payment processing...');
-    setTimeout(() => {
-      this.loading = false;
-      this.confirm();
-    }, 3000); // simulate loading delay
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    //  Defer to next microtask (after initial CD)
+    queueMicrotask(() => {
+      const state = window.history.state as { orderIds?: number[] };
+
+      this.orderIds = state?.orderIds ?? [];
+      console.log('orderIds', this.orderIds);
+
+      if (this.orderIds.length === 0) {
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        });
+      }
+    });
   }
-
   confirm() {
-    console.log('Confirming payment...');
-    // for now: hardcoded / coming from route / backend later
-    const paymentId = 1;
-
-    this.paymentService.confirmPayment(paymentId).subscribe({
+    forkJoin(
+      this.orderIds.map((orderId) => this.paymentService.confirmPaymentForOrder(orderId))
+    ).subscribe({
       next: () => {
-        this.status = 'Payment confirmed ✅';
-        this.loading = false;
-        console.log('Payment confirmed successfully.');
         this.paymentConfirmed = true;
+        this.loading = false;
+        this.status = 'Payment confirmed ✅';
         this.cdr.detectChanges();
       },
       error: () => {
+        this.loading = false;
         this.status = 'Payment failed ❌';
       },
     });

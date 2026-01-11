@@ -87,3 +87,9 @@ export interface UserUpdate {
   partner_id?: string;
   cart?: number[];
 }
+
+export interface PartnerRating {
+  partner_id: string;
+  avg_rating: number;
+  count: number;
+}

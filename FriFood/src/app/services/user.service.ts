@@ -65,6 +65,7 @@ export class UserService {
     return this.http.post<DbUser>(`${this.API_URL}/users/${userId}/cart/${offerId}`, {}).subscribe({
       next: (user) => {
         this._user.set(user);
+        alert('Item added to cart!');
       },
       error: (err) => {
         console.error('Failed to add offer to cart', err);
@@ -82,6 +83,19 @@ export class UserService {
         console.error('Failed to remove offer from cart', err);
       },
     });
+  }
+
+  getOrderHistory(userId: string) {
+    return this.http.get<{
+      user_id: string;
+      orders: any[];
+    }>(`${this.API_URL}/users/${userId}/orders`);
+  }
+
+  clearCart(userId: string) {
+    return this.http
+      .delete<DbUser>(`${this.API_URL}/users/${userId}/cart`)
+      .subscribe((user) => this._user.set(user));
   }
 
   clear() {
