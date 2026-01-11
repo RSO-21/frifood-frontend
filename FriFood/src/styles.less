@@ -1626,3 +1626,97 @@ app-profile {
         }
     }
 }
+
+// ==========================================
+// AUTOCOMPLETE DROPDOWN
+// ==========================================
+
+.autocomplete-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    max-width: 600px;
+    margin: @spacing-xs auto 0;
+    background: @background-white;
+    border: 1px solid @border-color;
+    border-radius: @radius-md;
+    overflow: hidden;
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+
+    &.shadow {
+        box-shadow: @shadow-lg;
+    }
+
+    .autocomplete-item {
+        padding: @spacing-md @spacing-lg;
+        font-size: @font-size-base;
+        color: @text-primary;
+        cursor: pointer;
+        transition: @transition-base;
+        border-bottom: 1px solid @border-color;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &:hover {
+            background: @background-light;
+            color: @primary-green;
+            padding-left: @spacing-lg + @spacing-xs;
+        }
+
+        &:active {
+            background: lighten(@primary-green, 45%);
+        }
+    }
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: @background-light;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: @border-color;
+        border-radius: 3px;
+
+        &:hover {
+            background: @text-muted;
+        }
+    }
+}
+
+// Make sure parent container has position relative
+app-home,
+.search-container,
+.location-search {
+    position: relative;
+}
+
+// ==========================================
+// AUTOCOMPLETE RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+    .autocomplete-menu {
+        max-width: 90%;
+        left: 5%;
+        right: 5%;
+        margin-left: 0;
+        margin-right: 0;
+
+        .autocomplete-item {
+            padding: @spacing-sm @spacing-md;
+            font-size: @font-size-sm;
+
+            &:hover {
+                padding-left: @spacing-md + @spacing-xs;
+            }
+        }
+    }
+}

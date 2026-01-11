@@ -22,16 +22,30 @@ export class Partners {
   partnerRatings = signal<Map<string, PartnerRating>>(new Map());
   ratingsLoaded = signal(false);
 
+  private samePartners(a: Partner[], b: Partner[]): boolean {
+    if (a.length !== b.length) return false;
+
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].id !== b[i].id) return false;
+    }
+
+    return true;
+  }
   constructor() {
     effect(() => {
       const partners = this.partnerService.partners();
+      console.log('Effect happening?', partners);
 
       if (!partners || partners.length === 0) {
+        this.partners = partners;
+        this.cdr.detectChanges();
         return;
       }
 
       // prevent refetching on every signal tick
-      if (this.ratingsLoaded()) {
+      if (this.ratingsLoaded() && this.samePartners(this.partners, partners)) {
+        this.partners = partners;
+        this.cdr.detectChanges();
         return;
       }
 
@@ -46,12 +60,15 @@ export class Partners {
           });
 
           this.partners = partners;
+          console.log('Setting partners');
           this.partnerRatings.set(map);
           this.ratingsLoaded.set(true);
           this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to load partner ratings', err);
+          this.partners = partners;
+          this.cdr.detectChanges();
         },
       });
     });
