@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { Offer, Partner } from '../models';
+import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { Offer, Partner, PartnerRating } from '../models';
 
 import { OffersComponent } from '../offers/offers';
 import { PartnerDashboardModal } from '../partner-dashboard-modal/partner-dashboard-modal';
 import { PartnerService } from '../services/partner.service';
+import { ReviewService } from '../services/review.service';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -15,8 +16,51 @@ import { UserService } from '../services/user.service';
 export class Partners {
   private partnerService = inject(PartnerService);
   private userService = inject(UserService);
+  private reviewService = inject(ReviewService);
+  protected partners: any[] = [];
+  private cdr = inject(ChangeDetectorRef);
+  partnerRatings = signal<Map<string, PartnerRating>>(new Map());
+  ratingsLoaded = signal(false);
 
-  partners = this.partnerService.partners;
+  constructor() {
+    effect(() => {
+      const partners = this.partnerService.partners();
+
+      if (!partners || partners.length === 0) {
+        return;
+      }
+
+      // prevent refetching on every signal tick
+      if (this.ratingsLoaded()) {
+        return;
+      }
+
+      const partnerIds = partners.map((p) => p.id);
+
+      this.reviewService.getPartnersRatings(partnerIds).subscribe({
+        next: (ratings) => {
+          const map = new Map(this.partnerRatings());
+
+          Object.values(ratings).forEach((r) => {
+            map.set(r.partner_id, r);
+          });
+
+          this.partners = partners;
+          this.partnerRatings.set(map);
+          this.ratingsLoaded.set(true);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to load partner ratings', err);
+        },
+      });
+    });
+  }
+
+  ratingFor(partnerId: string): PartnerRating | undefined {
+    return this.partnerRatings().get(partnerId);
+  }
+
   partnerToOpen: Partner | null = null;
 
   protected distanceTo(partner: Partner): string | null {

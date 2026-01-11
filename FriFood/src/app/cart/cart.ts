@@ -118,11 +118,20 @@ export class Cart {
     this.error.set('');
 
     forkJoin(orders.map((order) => this.orderService.createOrder(order))).subscribe({
-      next: () => {
-        console.log('Created orders:', orders);
+      next: (responses) => {
+        // responses = array of GraphQL responses
+        const createdOrderIds = responses.map((r) => r.data.createOrder.id);
+        console.log('createdOrderIds', createdOrderIds);
+
+        // this.userService.clearCart(this.userService.user_id());
+
+        this.router.navigate(['/payment'], {
+          state: { orderIds: createdOrderIds },
+        });
+
         this.loading.set(false);
-        this.router.navigate(['/payment']);
       },
+
       error: () => {
         this.error.set('Checkout failed');
         this.loading.set(false);

@@ -1,0 +1,67 @@
+<h2 class="mb-4">My Orders</h2>
+
+@if (loading) {
+<p>Loading order history…</p>
+
+} @else if (orders.length === 0) {
+<p>No orders yet.</p>
+
+} @else {
+<div class="list-group">
+  @for (o of orders; track o.id) {
+  <div class="list-group-item mb-2">
+    <div class="d-flex justify-content-between">
+      <div>
+        <strong>Order #{{ o.id }}</strong
+        ><br />
+        <small>Status: {{ o.order_status }}</small
+        ><br />
+        <small>Payment: {{ o.payment_status }}</small
+        ><br />
+        <small>Created: {{ o.created_at | date : 'short' }}</small>
+      </div>
+
+      @if (o.payment_status === 'PAID' && !o.reviewed) {
+      <button class="btn btn-sm btn-outline-primary" (click)="openReview(o.id)">
+        Leave review
+      </button>
+      } @if (o.reviewed) {
+      <span class="badge bg-success">Reviewed</span>
+      }
+    </div>
+
+    <!-- ORDER ITEMS -->
+    <ul class="mt-2">
+      @for (it of o.items; track it.id) {
+      <li>Offer #{{ it.offer_id }} × {{ it.quantity }}</li>
+      }
+    </ul>
+
+    <!-- INLINE REVIEW FORM -->
+    @if (openOrderId === o.id) {
+    <div class="border-top mt-3 pt-3">
+      <div class="mb-2">
+        <label class="form-label">Rating</label>
+        <select class="form-select" [(ngModel)]="rating">
+          <option [value]="5">★★★★★</option>
+          <option [value]="4">★★★★☆</option>
+          <option [value]="3">★★★☆☆</option>
+          <option [value]="2">★★☆☆☆</option>
+          <option [value]="1">★☆☆☆☆</option>
+        </select>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Comment</label>
+        <textarea class="form-control" rows="2" [(ngModel)]="comment"></textarea>
+      </div>
+
+      <button class="btn btn-success btn-sm" [disabled]="submitting" (click)="submitReview(o.id)">
+        Submit review
+      </button>
+    </div>
+    }
+  </div>
+  }
+</div>
+}

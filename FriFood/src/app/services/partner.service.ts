@@ -20,6 +20,7 @@ export class PartnerService {
 
   // setter
   setPartners(partners: any[]) {
+    console.log('Partners', partners);
     this._partners.set(partners);
   }
 

@@ -1303,3 +1303,326 @@ app-checkout {
         }
     }
 }
+
+// ==========================================
+// PROFILE / ORDERS
+// ==========================================
+
+app-profile {
+    display: block;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: @spacing-xl @spacing-md;
+    font-family: @font-family;
+
+    h2 {
+        font-size: @font-size-xl;
+        font-weight: @font-weight-bold;
+        color: @text-primary;
+        margin-bottom: @spacing-lg;
+        text-align: center;
+
+        &.mb-4 {
+            margin-bottom: @spacing-lg;
+        }
+    }
+
+    // Loading & empty states
+    >p {
+        text-align: center;
+        color: @text-secondary;
+        font-size: @font-size-lg;
+        padding: @spacing-xl * 2;
+        background: @background-light;
+        border-radius: @radius-lg;
+        margin: 0;
+    }
+
+    // Orders list
+    .list-group {
+        display: flex;
+        flex-direction: column;
+        gap: @spacing-md;
+
+        .list-group-item {
+            background: @background-white;
+            border: 1px solid @border-color;
+            border-radius: @radius-lg;
+            padding: @spacing-lg;
+            transition: @transition-base;
+            margin-bottom: @spacing-md;
+
+            &:hover {
+                border-color: @primary-green;
+                box-shadow: @shadow-md;
+            }
+
+            &.mb-2 {
+                margin-bottom: @spacing-md;
+            }
+
+            // Order header
+            .d-flex {
+                display: flex;
+                align-items: flex-start;
+                gap: @spacing-md;
+
+                &.justify-content-between {
+                    justify-content: space-between;
+                }
+
+                >div {
+                    flex: 1;
+
+                    strong {
+                        font-size: @font-size-lg;
+                        font-weight: @font-weight-bold;
+                        color: @text-primary;
+                        display: block;
+                        margin-bottom: @spacing-xs;
+                    }
+
+                    small {
+                        font-size: @font-size-sm;
+                        color: @text-secondary;
+                        display: block;
+                        line-height: 1.6;
+                        margin-bottom: 2px;
+                    }
+                }
+
+                // Review button
+                .btn {
+                    &.btn-sm {
+                        padding: @spacing-xs @spacing-md;
+                        font-size: @font-size-sm;
+                        font-weight: @font-weight-medium;
+                        border-radius: @radius-sm;
+                        transition: @transition-base;
+                        white-space: nowrap;
+                    }
+
+                    &.btn-outline-primary {
+                        color: @primary-green;
+                        border-color: @primary-green;
+                        background: transparent;
+
+                        &:hover {
+                            background: @primary-green;
+                            color: white;
+                            transform: translateY(-1px);
+                            box-shadow: @shadow-sm;
+                        }
+
+                        &:active {
+                            transform: translateY(0);
+                        }
+                    }
+                }
+
+                // Reviewed badge
+                .badge {
+                    padding: @spacing-xs @spacing-sm;
+                    font-size: @font-size-sm;
+                    font-weight: @font-weight-medium;
+                    border-radius: @radius-sm;
+
+                    &.bg-success {
+                        background: @success-green  !important;
+                        color: white;
+                    }
+                }
+            }
+
+            // Order items list
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: @spacing-md 0 0 0;
+                padding-top: @spacing-md;
+                border-top: 1px solid @border-color;
+
+                &.mt-2 {
+                    margin-top: @spacing-md;
+                }
+
+                li {
+                    padding: @spacing-xs @spacing-sm;
+                    background: @background-light;
+                    border-radius: @radius-sm;
+                    margin-bottom: @spacing-xs;
+                    font-size: @font-size-sm;
+                    color: @text-primary;
+                    display: flex;
+                    align-items: center;
+
+                    &:before {
+                        content: '•';
+                        color: @primary-green;
+                        font-weight: bold;
+                        margin-right: @spacing-sm;
+                    }
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+            }
+
+            // Inline review form
+            .border-top {
+                border-top: 2px solid @primary-green  !important;
+                padding-top: @spacing-lg  !important;
+                margin-top: @spacing-lg  !important;
+                background: @background-light;
+                border-radius: @radius-md;
+                padding: @spacing-lg;
+
+                &.mt-3 {
+                    margin-top: @spacing-lg  !important;
+                }
+
+                &.pt-3 {
+                    padding-top: @spacing-lg  !important;
+                }
+
+                .mb-2 {
+                    margin-bottom: @spacing-md;
+                }
+
+                .form-label {
+                    display: block;
+                    font-size: @font-size-sm;
+                    font-weight: @font-weight-medium;
+                    color: @text-primary;
+                    margin-bottom: @spacing-xs;
+                }
+
+                .form-select,
+                .form-control {
+                    width: 100%;
+                    padding: @spacing-sm @spacing-md;
+                    border: 1px solid @border-color;
+                    border-radius: @radius-md;
+                    font-size: @font-size-sm;
+                    font-family: @font-family;
+                    transition: @transition-base;
+
+                    &:focus {
+                        outline: none;
+                        border-color: @primary-green;
+                        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+                    }
+                }
+
+                .form-select {
+                    cursor: pointer;
+                    background: @background-white;
+                    appearance: none;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+                    background-repeat: no-repeat;
+                    background-position: right @spacing-sm center;
+                    padding-right: @spacing-xl;
+                }
+
+                textarea.form-control {
+                    resize: vertical;
+                    min-height: 80px;
+                    line-height: 1.5;
+                }
+
+                .btn-success {
+                    background: @success-green;
+                    border-color: @success-green;
+                    color: white;
+                    padding: @spacing-sm @spacing-lg;
+                    font-size: @font-size-sm;
+                    font-weight: @font-weight-bold;
+                    border-radius: @radius-md;
+                    transition: @transition-base;
+                    cursor: pointer;
+
+                    &:hover:not(:disabled) {
+                        background: darken(@success-green, 10%);
+                        border-color: darken(@success-green, 10%);
+                        transform: translateY(-1px);
+                        box-shadow: @shadow-sm;
+                    }
+
+                    &:active:not(:disabled) {
+                        transform: translateY(0);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+
+                    &.btn-sm {
+                        padding: @spacing-sm @spacing-md;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ==========================================
+// PROFILE RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+    app-profile {
+        padding: @spacing-lg @spacing-md;
+
+        h2 {
+            font-size: @font-size-lg;
+        }
+
+        .list-group {
+            .list-group-item {
+                padding: @spacing-md;
+
+                .d-flex {
+                    flex-direction: column;
+                    align-items: stretch;
+
+                    >div {
+                        strong {
+                            font-size: @font-size-base;
+                        }
+
+                        small {
+                            font-size: 0.75rem;
+                        }
+                    }
+
+                    .btn,
+                    .badge {
+                        align-self: flex-start;
+                        margin-top: @spacing-sm;
+                    }
+                }
+
+                ul {
+                    li {
+                        font-size: 0.75rem;
+                    }
+                }
+
+                .border-top {
+                    padding: @spacing-md;
+
+                    .form-select,
+                    .form-control {
+                        font-size: 0.75rem;
+                    }
+
+                    .btn-success {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}

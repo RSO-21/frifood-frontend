@@ -1,5 +1,6 @@
 @if (loading) {
-<p>Loading payment…</p>
+<button (click)="confirm()">Pay</button>
+
 } @else { @if (paymentConfirmed) {
 <h2>Payment Successful!</h2>
 <p>Thank you for your purchase. Your order has been confirmed.</p>

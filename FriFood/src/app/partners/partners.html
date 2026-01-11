@@ -1,33 +1,40 @@
 <div class="container">
   <h2>Najdene ponudbe v tvoji bližini.</h2>
 
-  @if (partners().length === 0) {
+  @if (partners.length === 0) {
   <div class="empty-state">
     <p>Ni najdenih ponudb v bližini.</p>
   </div>
   } @else {
   <div class="row">
-    @for (partner of partners(); track partner.id) {
+    @for (p of partners; track p.id) {
     <div
-      (click)="openPartner(partner)"
+      (click)="openPartner(p)"
       data-bs-toggle="modal"
       data-bs-target="#partnerDashboardModal-partners"
     >
       <h3>
-        {{ partner.name }}
+        {{ p.name }}
+        @if (ratingFor(p.id)) {
+        <small>
+          ⭐ {{ ratingFor(p.id)!.avg_rating.toFixed(1) }} ({{ ratingFor(p.id)!.count }})
+        </small>
+        } @else {
+        <small class="text-muted">No ratings yet</small>
+        }
       </h3>
 
-      @if (distanceTo(partner) !== null) {
-      <p>{{ distanceTo(partner) }}</p>
+      @if (distanceTo(p) !== null) {
+      <p>{{ distanceTo(p) }}</p>
       }
 
-      <p>{{ partner.address }}, {{ partner.city }}</p>
+      <p>{{ p.address }}, {{ p.city }}</p>
 
       <!-- PREVIEW: only top 2 -->
       <app-offers
         [limit]="2"
-        [partner]="partner"
-        (click)="openPartner(partner)"
+        [partner]="p"
+        (click)="openPartner(p)"
         data-bs-toggle="modal"
         data-bs-target="#partnerDashboardModal-partners"
       ></app-offers>

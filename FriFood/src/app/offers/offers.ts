@@ -17,7 +17,6 @@ export class OffersComponent {
   cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    console.log('OffersComponent initialized with partner:', this.partner);
     if (this.partner) {
       this.offerService.listOffersByPartner(this.partner.id).subscribe((offers) => {
         this.offers = offers;
