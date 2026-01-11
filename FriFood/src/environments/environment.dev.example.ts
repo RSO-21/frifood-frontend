@@ -11,4 +11,5 @@ export const environment = {
   paymentServiceUrl: 'http://payments-dev.68.210.120.104.nip.io',
   partnerServiceUrl: 'http://partners-dev.68.210.120.104.nip.io',
   notificationServiceUrl: 'http://notifications-dev.68.210.120.104.nip.io',
+  reviewServiceUrl: 'http://reviews-dev.68.210.120.104.nip.io',
 } as const;

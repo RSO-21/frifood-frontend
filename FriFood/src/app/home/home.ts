@@ -8,6 +8,7 @@ import {
   inject,
 } from '@angular/core';
 
+import { GoogleMapsLoaderService } from '../services/googlemapsloader';
 import { OrderService } from '../services/order.service';
 import { PartnerService } from '../services/partner.service';
 import { Partners } from '../partners/partners';
@@ -33,6 +34,7 @@ export class Home {
   private partnerService = inject(PartnerService);
 
   private userService = inject(UserService);
+  private gmaps = inject(GoogleMapsLoaderService);
 
   user = this.userService.user;
 
@@ -56,7 +58,7 @@ export class Home {
     });
   }
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit() {
     //  Skip on server
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -65,11 +67,14 @@ export class Home {
     if (this.autocomplete) {
       return; // already initialized
     }
-    const g = (window as any).google;
-
+    var g = (window as any).google;
     if (!g?.maps?.places) {
-      console.warn('Google Maps Places API not available');
-      return;
+      try {
+        await this.gmaps.loadPlaces();
+        g = (window as any).google;
+      } catch (e) {
+        console.error('Failed to load Google Maps Places', e);
+      }
     }
 
     this.autocomplete = new g.maps.places.Autocomplete(this.addressInput.nativeElement, {
