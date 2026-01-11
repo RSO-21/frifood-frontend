@@ -48,8 +48,9 @@ export class OrderService {
   createOrder(
     input: {
       userId: string;
+      partnerId: string;
       items: { offerId: number; quantity: number }[];
-      amount: number;
+      amount: number; // Decimal-safe
     },
     tenantId: string = 'public'
   ) {

@@ -1056,3 +1056,250 @@ app-cart {
         }
     }
 }
+
+// ==========================================
+// PAYMENT / CHECKOUT
+// ==========================================
+
+app-payment,
+app-checkout {
+    display: block;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: @spacing-xl @spacing-md;
+    font-family: @font-family;
+    min-height: 60vh;
+
+    // Loading state
+    >p {
+        text-align: center;
+        color: @text-secondary;
+        font-size: @font-size-lg;
+        padding: @spacing-xl * 2;
+    }
+
+    // Success heading
+    h2 {
+        font-size: 2rem;
+        font-weight: @font-weight-bold;
+        color: @primary-green;
+        text-align: center;
+        margin-bottom: @spacing-md;
+
+        &::before {
+            content: '✓ ';
+            display: inline-block;
+            margin-right: @spacing-xs;
+        }
+    }
+
+    // Failed heading
+    h2:has(+ p:contains('issue')) {
+        color: @discount-red;
+
+        &::before {
+            content: '✗ ';
+        }
+    }
+
+    // General paragraph
+    >p {
+        text-align: center;
+        font-size: @font-size-lg;
+        color: @text-secondary;
+        margin-bottom: @spacing-xl;
+        line-height: 1.6;
+    }
+
+    // Review section
+    .review-section {
+        background: @background-white;
+        border: 2px solid @primary-green;
+        border-radius: @radius-lg;
+        padding: @spacing-xl;
+        margin-top: @spacing-xl;
+        box-shadow: @shadow-md;
+
+        h3 {
+            font-size: @font-size-xl;
+            font-weight: @font-weight-bold;
+            color: @text-primary;
+            margin: 0 0 @spacing-lg 0;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: @spacing-lg;
+            font-size: @font-size-base;
+            color: @text-primary;
+            font-weight: @font-weight-medium;
+
+            select,
+            textarea {
+                display: block;
+                width: 100%;
+                margin-top: @spacing-sm;
+                padding: @spacing-sm @spacing-md;
+                border: 1px solid @border-color;
+                border-radius: @radius-md;
+                font-size: @font-size-base;
+                font-family: @font-family;
+                transition: @transition-base;
+
+                &:focus {
+                    outline: none;
+                    border-color: @primary-green;
+                    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+                }
+            }
+
+            select {
+                cursor: pointer;
+                background: @background-white;
+                padding-right: @spacing-xl;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right @spacing-sm center;
+
+                option {
+                    padding: @spacing-sm;
+                }
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+                line-height: 1.5;
+
+                &::placeholder {
+                    color: @text-muted;
+                }
+            }
+        }
+
+        button {
+            width: 100%;
+            padding: @spacing-md @spacing-lg;
+            background: @primary-green;
+            color: white;
+            border: none;
+            border-radius: @radius-md;
+            font-size: @font-size-lg;
+            font-weight: @font-weight-bold;
+            cursor: pointer;
+            transition: @transition-base;
+            margin-top: @spacing-sm;
+
+            &:hover:not(:disabled) {
+                background: @primary-green-dark;
+                transform: translateY(-2px);
+                box-shadow: @shadow-md;
+            }
+
+            &:active:not(:disabled) {
+                transform: translateY(0);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+
+        .success {
+            text-align: center;
+            margin-top: @spacing-md;
+            padding: @spacing-md;
+            background: lighten(@primary-green, 45%);
+            border: 1px solid @primary-green;
+            border-radius: @radius-md;
+            color: @primary-green-dark;
+            font-weight: @font-weight-medium;
+            font-size: @font-size-base;
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Payment failed state
+app-payment,
+app-checkout {
+
+    // Override h2 color when it's a failure
+    &:has(p:contains('issue')) h2,
+    &:has(p:contains('failed')) h2,
+    &:has(p:contains('Failed')) h2 {
+        color: @discount-red;
+    }
+}
+
+// Alternative: explicit failure styling
+.payment-failed,
+.payment-error {
+    h2 {
+        color: @discount-red  !important;
+
+        &::before {
+            content: '✗ ' !important;
+        }
+    }
+
+    >p {
+        color: @text-primary;
+    }
+}
+
+.payment-success {
+    h2 {
+        color: @primary-green  !important;
+
+        &::before {
+            content: '✓ ' !important;
+        }
+    }
+}
+
+// ==========================================
+// PAYMENT RESPONSIVE
+// ==========================================
+
+@media (max-width: 768px) {
+
+    app-payment,
+    app-checkout {
+        padding: @spacing-lg @spacing-md;
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        >p {
+            font-size: @font-size-base;
+        }
+
+        .review-section {
+            padding: @spacing-lg @spacing-md;
+
+            h3 {
+                font-size: @font-size-lg;
+            }
+
+            label {
+                font-size: @font-size-sm;
+
+                select,
+                textarea {
+                    font-size: @font-size-sm;
+                }
+            }
+
+            button {
+                padding: @spacing-sm @spacing-md;
+                font-size: @font-size-base;
+            }
+        }
+    }
+}
