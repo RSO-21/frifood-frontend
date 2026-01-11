@@ -18,14 +18,14 @@ ARG BUILD_ENV=local
 
 RUN if [ "$BUILD_ENV" = "production" ]; then \
 		cp src/environments/environment.prod.example.ts src/environments/environment.ts \
-		&& npx ng build --configuration production; \
+		&& npx ng build --configuration production --prerender=false; \
 	elif [ "$BUILD_ENV" = "dev" ]; then \
 		cp src/environments/environment.dev.example.ts src/environments/environment.ts \
-		&& npx ng build --configuration production; \
+		&& npx ng build --configuration production --prerender=false; \
 	else \
 		cp src/environments/environment.docker.example.ts src/environments/environment.ts \
 		&& cp src/environments/environment.docker.example.ts src/environments/environment.docker.ts \
-		&& npx ng build --configuration docker; \
+		&& npx ng build --configuration docker --prerender=false; \
 	fi
 
 # Runtime stage
@@ -36,6 +36,10 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy browser build output (Angular SSR build produces dist/<app>/browser)
 COPY --from=build /app/dist/FriFood/browser/ /usr/share/nginx/html/
+
+# Runtime env injection for nginx image (runs before nginx starts)
+COPY docker/20-runtime-env.sh /docker-entrypoint.d/20-runtime-env.sh
+RUN chmod +x /docker-entrypoint.d/20-runtime-env.sh
 
 EXPOSE 80
 
