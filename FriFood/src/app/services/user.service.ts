@@ -62,39 +62,43 @@ export class UserService {
   /** Add offer to cart (duplicates allowed) */
   addOfferToCart(userId: string, offerId: number) {
     console.log('Adding offer to cart:', offerId);
-    return this.http.post<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`, {}).subscribe({
-      next: (user) => {
-        this._user.set(user);
-        alert('Item added to cart!');
-      },
-      error: (err) => {
-        console.error('Failed to add offer to cart', err);
-      },
-    });
+    return this.http
+      .post<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`, {})
+      .subscribe({
+        next: (user) => {
+          this._user.set(user);
+          alert('Item added to cart!');
+        },
+        error: (err) => {
+          console.error('Failed to add offer to cart', err);
+        },
+      });
   }
 
   /** Remove ONE occurrence of offer from cart */
   removeOfferFromCart(userId: string, offerId: number) {
-    return this.http.delete<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`).subscribe({
-      next: (user) => {
-        this._user.set(user);
-      },
-      error: (err) => {
-        console.error('Failed to remove offer from cart', err);
-      },
-    });
+    return this.http
+      .delete<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart/${offerId}`)
+      .subscribe({
+        next: (user) => {
+          this._user.set(user);
+        },
+        error: (err) => {
+          console.error('Failed to remove offer from cart', err);
+        },
+      });
   }
 
   getOrderHistory(userId: string) {
     return this.http.get<{
       user_id: string;
       orders: any[];
-    }>(`${this.API_URL}/users/${userId}/orders`);
+    }>(`${this.API_GATEWAY_URL}/users/${userId}/orders`);
   }
 
   clearCart(userId: string) {
     return this.http
-      .delete<DbUser>(`${this.API_URL}/users/${userId}/cart`)
+      .delete<DbUser>(`${this.API_GATEWAY_URL}/users/${userId}/cart`)
       .subscribe((user) => this._user.set(user));
   }
 

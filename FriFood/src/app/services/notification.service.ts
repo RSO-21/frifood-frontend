@@ -16,7 +16,7 @@ export interface Notification {
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.notificationServiceUrl;
+  private readonly API_URL = environment.apiGatewayUrl;
 
   list(userId: string, unreadOnly = false) {
     return this.http.get<Notification[]>(`${this.API_URL}/notifications`, {

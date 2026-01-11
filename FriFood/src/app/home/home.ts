@@ -65,7 +65,7 @@ export class Home {
 
     this.http
       .get<{ description: string; place_id: string }[]>(
-        `${environment.userServiceUrl}/location/autocomplete`,
+        `${environment.apiGatewayUrl}/location/autocomplete`,
         { params: { input: value } }
       )
       .subscribe({
@@ -86,7 +86,7 @@ export class Home {
         latitude: number;
         longitude: number;
         formatted_address: string;
-      }>(`${environment.userServiceUrl}/location/place`, {
+      }>(`${environment.apiGatewayUrl}/location/place`, {
         params: { place_id: s.place_id },
       })
       .subscribe({
@@ -100,7 +100,6 @@ export class Home {
   // -----------------------------
   private applyLocation(res: { latitude: number; longitude: number; formatted_address: string }) {
     const { latitude, longitude, formatted_address } = res;
-    console.log('Applying location, lat, lng', latitude, longitude);
     this.partnerService
       .getNearbyPartners({
         lat: latitude,

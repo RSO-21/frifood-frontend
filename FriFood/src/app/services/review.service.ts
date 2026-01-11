@@ -17,8 +17,11 @@ export class ReviewService {
 
   getPartnersRatings(partnerIds: string[]) {
     const params = partnerIds.join(',');
-    return this.http.get<Record<string, PartnerRating>>(`${this.API_URL}/partners/ratings`, {
-      params: { partner_ids: params },
-    });
+    return this.http.get<Record<string, PartnerRating>>(
+      `${this.API_URL_GATEWAY}/partners/ratings`,
+      {
+        params: { partner_ids: params },
+      }
+    );
   }
 }
