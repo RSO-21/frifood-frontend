@@ -9,10 +9,10 @@ import { environment } from '../../environments/environment';
 })
 export class ReviewService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.reviewServiceUrl;
+  private readonly API_URL_GATEWAY = environment.apiGatewayUrl;
 
   createReview(input: { order_id: number; user_id: string; rating: number; comment?: string }) {
-    return this.http.post(`${this.API_URL}/reviews`, input);
+    return this.http.post(`${this.API_URL_GATEWAY}/reviews`, input);
   }
 
   getPartnersRatings(partnerIds: string[]) {

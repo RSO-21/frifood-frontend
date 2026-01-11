@@ -8,11 +8,11 @@ import { environment } from '../../environments/environment';
 })
 export class PaymentService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.paymentServiceUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
 
   /** Confirm payment for an order */
   confirmPaymentForOrder(orderId: number) {
     console.log('Confirming payment for order:', orderId);
-    return this.http.post(`${this.API_URL}/payments/orders/${orderId}/confirm`, {});
+    return this.http.post(`${this.API_GATEWAY_URL}/payments/orders/${orderId}/confirm`, {});
   }
 }

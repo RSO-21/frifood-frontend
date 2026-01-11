@@ -10,7 +10,7 @@ import { signal } from '@angular/core';
 })
 export class PartnerService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.partnerServiceUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
 
   // state
   private readonly _partners = signal<Partner[]>([]);
@@ -42,14 +42,14 @@ export class PartnerService {
 
   /** Get all partners */
   listPartners(tenantId?: string) {
-    return this.http.get<Partner[]>(`${this.API_URL}/partners`, {
+    return this.http.get<Partner[]>(`${this.API_GATEWAY_URL}/partners/list_partners`, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Get partners nearby (approximate geo search) */
   getNearbyPartners(params: PartnerNearbyParams, tenantId: string = 'public') {
-    return this.http.get<Partner[]>(`${this.API_URL}/partners/nearby`, {
+    return this.http.get<Partner[]>(`${this.API_GATEWAY_URL}/partners/nearby`, {
       headers: this.headers(tenantId),
       params: {
         lat: params.lat,
@@ -61,28 +61,28 @@ export class PartnerService {
 
   /** Get a single partner by ID */
   getPartner(id: string, tenantId?: string) {
-    return this.http.get<Partner>(`${this.API_URL}/partners/${id}`, {
+    return this.http.get<Partner>(`${this.API_GATEWAY_URL}/partners/${id}`, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Create a new partner */
   createPartner(partner: PartnerCreate, tenantId?: string) {
-    return this.http.post<Partner>(`${this.API_URL}/partners`, partner, {
+    return this.http.post<Partner>(`${this.API_GATEWAY_URL}/partners`, partner, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Update an existing partner */
   updatePartner(id: string, partner: PartnerUpdate, tenantId?: string) {
-    return this.http.put<Partner>(`${this.API_URL}/partners/${id}`, partner, {
+    return this.http.put<Partner>(`${this.API_GATEWAY_URL}/partners/${id}`, partner, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Delete a partner */
   deletePartner(id: string, tenantId?: string) {
-    return this.http.delete<void>(`${this.API_URL}/partners/${id}`, {
+    return this.http.delete<void>(`${this.API_GATEWAY_URL}/partners/${id}`, {
       headers: this.headers(tenantId),
     });
   }

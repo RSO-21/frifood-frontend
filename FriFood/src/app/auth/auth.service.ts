@@ -32,7 +32,7 @@ export class AuthService {
   private userService = inject(UserService);
 
   // base URL of your Flask auth microservice
-  private readonly API_URL = environment.authServiceUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
 
   // signals
   private readonly _token = signal<string | null>(null);
@@ -44,25 +44,22 @@ export class AuthService {
   username = computed(() => this._keycloakUser()?.preferred_username || null);
 
   login(username: string, password: string) {
-    return this.http
-      .post(
-        `${this.API_URL}/auth/login`,
-        {
-          username,
-          password,
-        },
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: () => this.loadMe(),
-        error: (err) => console.error('Login failed', err),
-      });
-  }
+  return this.http
+    .post(
+      `${this.API_GATEWAY_URL}/auth/login`,  // API_URL = gateway
+      { username, password },
+      { withCredentials: true }     // da cookies pridejo
+    )
+    .subscribe({
+      next: () => this.loadMe(),
+      error: (err) => console.error('Login failed', err),
+    });
+}
 
   signup(username: string, email: string, password: string) {
     return this.http
       .post(
-        `${this.API_URL}/auth/signup`,
+        `${this.API_GATEWAY_URL}/auth/signup`,
         {
           username,
           email,
@@ -78,7 +75,7 @@ export class AuthService {
 
   loadMe() {
     this.http
-      .get<KeycloakUser>(`${this.API_URL}/auth/me`, {
+      .get<KeycloakUser>(`${this.API_GATEWAY_URL}/auth/me`, {
         withCredentials: true,
       })
       .subscribe({
@@ -94,7 +91,7 @@ export class AuthService {
   logout() {
     this.http
       .post(
-        `${this.API_URL}/auth/logout`,
+        `${this.API_GATEWAY_URL}/auth/logout`,
         {},
         {
           withCredentials: true,

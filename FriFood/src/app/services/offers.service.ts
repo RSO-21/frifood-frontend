@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class OfferService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = environment.offerServiceUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
 
   // state
   private readonly _offers = signal<Offer[]>([]);
@@ -40,14 +40,14 @@ export class OfferService {
 
   /** Get all offers */
   listOffers(tenantId?: string) {
-    return this.http.get<Offer[]>(`${this.API_URL}/offers`, {
+    return this.http.get<Offer[]>(`${this.API_GATEWAY_URL}/offers/list_offers`, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Get a single offer by ID */
   getOffer(offerId: number, tenantId?: string) {
-    return this.http.get<Offer>(`${this.API_URL}/offers/${offerId}`, {
+    return this.http.get<Offer>(`${this.API_GATEWAY_URL}/offers/${offerId}`, {
       headers: this.headers(tenantId),
     });
   }
@@ -55,35 +55,35 @@ export class OfferService {
   /** Create a new offer */
   createOffer(offer: Offer, tenantId?: string) {
     console.log('Creating offer:', offer);
-    return this.http.post<Offer>(`${this.API_URL}/offers`, offer, {
+    return this.http.post<Offer>(`${this.API_GATEWAY_URL}/offers`, offer, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Update an existing offer */
   updateOffer(offerId: number, offer: OfferUpdate, tenantId?: string) {
-    return this.http.put<Offer>(`${this.API_URL}/offers/${offerId}`, offer, {
+    return this.http.put<Offer>(`${this.API_GATEWAY_URL}/offers/${offerId}`, offer, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Get all offers for a specific partner */
   listOffersByPartner(partnerId: string, tenantId?: string) {
-    return this.http.get<Offer[]>(`${this.API_URL}/offers/by-partner/${partnerId}`, {
+    return this.http.get<Offer[]>(`${this.API_GATEWAY_URL}/offers/by-partner/${partnerId}`, {
       headers: this.headers(tenantId),
     });
   }
 
   /** Delete an offer */
   deleteOffer(offerId: number, tenantId?: string) {
-    return this.http.delete<void>(`${this.API_URL}/offers/${offerId}`, {
+    return this.http.delete<void>(`${this.API_GATEWAY_URL}/offers/${offerId}`, {
       headers: this.headers(tenantId),
     });
   }
 
   getOffersByIds(ids: number[], tenantId?: string) {
     return this.http.post<Offer[]>(
-      `${this.API_URL}/offers/bulk`,
+      `${this.API_GATEWAY_URL}/offers/bulk`,
       { ids },
       { headers: this.headers(tenantId) }
     );
