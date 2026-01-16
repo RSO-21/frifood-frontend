@@ -65,7 +65,7 @@ export class Home {
 
     this.http
       .get<{ description: string; place_id: string }[]>(
-        `${environment.apiGatewayUrl}/location/autocomplete`,
+        `${environment.apiGatewayUrl}/users/location/autocomplete`,
         { params: { input: value } }
       )
       .subscribe({
@@ -86,7 +86,7 @@ export class Home {
         latitude: number;
         longitude: number;
         formatted_address: string;
-      }>(`${environment.apiGatewayUrl}/location/place`, {
+      }>(`${environment.apiGatewayUrl}/users/location/place`, {
         params: { place_id: s.place_id },
       })
       .subscribe({
