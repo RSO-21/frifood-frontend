@@ -89,6 +89,6 @@ export class Navbar {
   }
   goToCart() {
     // Navigate to the cart page
-    window.location.href = '/cart';
+    this.router.navigate(['/cart']);
   }
 }
