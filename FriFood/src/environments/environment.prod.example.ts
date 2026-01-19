@@ -3,5 +3,5 @@ export const environment = {
   googleMapsApiKey: '',
 
   // AKS prod ingress URLs (same as dev but without '-dev')
-  apiGatewayUrl: 'http://api.frifood.ass.si',
+  apiGatewayUrl: 'https://api.frifood.ass.si',
 } as const;
