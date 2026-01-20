@@ -15,7 +15,6 @@
         >
           <h3>
             {{ p.name }}
-            {{ p.id }}
             @if (ratingFor(p.id)) {
               <small>
                 ⭐ {{ ratingFor(p.id)!.avg_rating.toFixed(1) }} ({{ ratingFor(p.id)!.count }})
