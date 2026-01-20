@@ -32,6 +32,7 @@ export class Navbar {
   showDropdown = false;
 
   unreadCount = computed(() => this.notifications().filter((n) => !n.is_read).length);
+  // unreadCount = 1;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
     effect(() => {
@@ -66,7 +67,7 @@ export class Navbar {
     this.notificationsService.markRead(notification.id).subscribe({
       next: () => {
         this.notifications.update((list) =>
-          list.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n))
+          list.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n)),
         );
       },
     });

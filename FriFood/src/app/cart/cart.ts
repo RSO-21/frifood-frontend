@@ -6,6 +6,7 @@ import { OfferService } from '../services/offers.service';
 import { OrderService } from '../services/order.service';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { create } from 'node:domain';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -39,7 +40,7 @@ export class Cart {
     this.offers().reduce((sum, offer) => {
       const qty = this.cartQuantities().get(offer.id) ?? 0;
       return sum + offer.price_discounted * qty;
-    }, 0)
+    }, 0),
   );
 
   ordersByPartner = computed(() => {
@@ -121,12 +122,13 @@ export class Cart {
       next: (responses) => {
         // responses = array of GraphQL responses
         const createdOrderIds = responses.map((r) => r.data.createOrder.id);
+        const createdExternalIds = responses.map((r) => r.data.createOrder.externalId);
         console.log('createdOrderIds', createdOrderIds);
 
-        this.userService.clearCart(this.userService.user_id());
+        // this.userService.clearCart(this.userService.user_id());
 
         this.router.navigate(['/payment'], {
-          state: { orderIds: createdOrderIds },
+          state: { orderIds: createdOrderIds, externalIds: createdExternalIds },
         });
 
         this.loading.set(false);

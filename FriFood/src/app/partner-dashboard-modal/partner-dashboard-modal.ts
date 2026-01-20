@@ -92,11 +92,12 @@ export class PartnerDashboardModal {
 
   discountPercent(offer: Offer): number {
     return Math.round(
-      ((offer.price_original - offer.price_discounted) / offer.price_original) * 100
+      ((offer.price_original - offer.price_discounted) / offer.price_original) * 100,
     );
   }
 
   addToCart(offer: Offer) {
+    console.log(this.UserService.user_id());
     this.UserService.addOfferToCart(this.UserService.user_id(), offer.id);
   }
 }

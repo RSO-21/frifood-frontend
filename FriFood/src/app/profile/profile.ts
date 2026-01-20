@@ -21,7 +21,7 @@ export class Profile {
   orders: any[] = [];
 
   // review UI state
-  openOrderId: number | null = null;
+  openOrder: any | null = null;
   rating = 5;
   comment = '';
   submitting = false;
@@ -36,6 +36,7 @@ export class Profile {
         next: (res) => {
           console.log('res', res);
           this.orders = res.orders;
+
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -47,8 +48,8 @@ export class Profile {
     });
   }
 
-  openReview(orderId: number) {
-    this.openOrderId = orderId;
+  openReview(order: any) {
+    this.openOrder = order;
     this.rating = 5;
     this.comment = '';
   }
@@ -66,7 +67,7 @@ export class Profile {
       .subscribe({
         next: () => {
           this.submitting = false;
-          this.openOrderId = null;
+          this.openOrder = null;
           // mark locally as reviewed
           this.orders = this.orders.map((o) => (o.id === orderId ? { ...o, reviewed: true } : o));
           alert('Review submitted successfully!');

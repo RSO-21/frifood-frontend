@@ -37,6 +37,7 @@ export class Payment {
   router = inject(Router);
 
   orderIds: number[] = [];
+  externalIds: string[] = [];
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -45,10 +46,11 @@ export class Payment {
 
     //  Defer to next microtask (after initial CD)
     queueMicrotask(() => {
-      const state = window.history.state as { orderIds?: number[] };
+      const state = window.history.state as { orderIds?: number[]; externalIds?: string[] };
 
       this.orderIds = state?.orderIds ?? [];
-      console.log('orderIds', this.orderIds);
+      this.externalIds = state?.externalIds ?? [];
+      console.log('orderIds', this.orderIds, 'externalIds', this.externalIds);
 
       if (this.orderIds.length === 0) {
         setTimeout(() => {
@@ -58,8 +60,17 @@ export class Payment {
     });
   }
   confirm() {
+    // if (this.orderIds.length !== this.externalIds.length) {
+    //   this.status = 'Payment data mismatch ❌';
+    //   return;
+    // }
+
+    this.loading = true;
+
     forkJoin(
-      this.orderIds.map((orderId) => this.paymentService.confirmPaymentForOrder(orderId))
+      this.orderIds.map((orderId, index) =>
+        this.paymentService.confirmPaymentForOrder(orderId, this.externalIds[index]),
+      ),
     ).subscribe({
       next: () => {
         this.paymentConfirmed = true;
@@ -67,7 +78,8 @@ export class Payment {
         this.status = 'Payment confirmed ✅';
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.error('Payment confirmation failed', err);
         this.loading = false;
         this.status = 'Payment failed ❌';
       },

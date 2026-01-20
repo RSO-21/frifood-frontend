@@ -52,7 +52,7 @@ export class OrderService {
       items: { offerId: number; quantity: number }[];
       amount: number; // Decimal-safe
     },
-    tenantId: string = 'public'
+    tenantId: string = 'public',
   ) {
     const mutation = `
     mutation CreateOrder($input: CreateOrderInput!) {
@@ -62,6 +62,7 @@ export class OrderService {
         orderStatus
         paymentStatus
         createdAt
+        externalId
         items {
           id
           offerId
@@ -84,7 +85,7 @@ export class OrderService {
           'Content-Type': 'application/json',
           'X-Tenant-ID': tenantId,
         }),
-      }
+      },
     );
   }
 }
