@@ -9,7 +9,9 @@ import { environment } from '../../environments/environment';
 })
 export class OfferService {
   private readonly http = inject(HttpClient);
-  private readonly API_GATEWAY_URL = environment.apiGatewayUrl;
+  private readonly API_GATEWAY_URL = environment.apiGatewayUrl.startsWith('//')
+    ? `https:${environment.apiGatewayUrl}`
+    : environment.apiGatewayUrl;
 
   // state
   private readonly _offers = signal<Offer[]>([]);
@@ -85,7 +87,7 @@ export class OfferService {
     return this.http.post<Offer[]>(
       `${this.API_GATEWAY_URL}/offers/bulk`,
       { ids },
-      { headers: this.headers(tenantId) }
+      { headers: this.headers(tenantId) },
     );
   }
 }

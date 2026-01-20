@@ -52,6 +52,10 @@ export class Home {
     });
   }
 
+  ngOnInit() {
+    // this.userService.updateUser()
+  }
+
   // -----------------------------
   // Autocomplete input
   // -----------------------------
@@ -64,10 +68,9 @@ export class Home {
     }
 
     this.http
-      .get<{ description: string; place_id: string }[]>(
-        `${environment.apiGatewayUrl}/users/location/autocomplete`,
-        { params: { input: value } }
-      )
+      .get<
+        { description: string; place_id: string }[]
+      >(`${environment.apiGatewayUrl}/users/location/autocomplete`, { params: { input: value } })
       .subscribe({
         next: (res) => (this.suggestions = res),
         error: () => (this.suggestions = []),
