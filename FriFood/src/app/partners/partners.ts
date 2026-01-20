@@ -53,6 +53,7 @@ export class Partners {
 
       this.reviewService.getPartnersRatings(partnerIds).subscribe({
         next: (ratings) => {
+          console.log('Reviews', ratings);
           const map = new Map(this.partnerRatings());
 
           Object.values(ratings).forEach((r) => {

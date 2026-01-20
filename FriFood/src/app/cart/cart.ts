@@ -125,7 +125,7 @@ export class Cart {
         const createdExternalIds = responses.map((r) => r.data.createOrder.externalId);
         console.log('createdOrderIds', createdOrderIds);
 
-        // this.userService.clearCart(this.userService.user_id());
+        this.userService.clearCart(this.userService.user_id());
 
         this.router.navigate(['/payment'], {
           state: { orderIds: createdOrderIds, externalIds: createdExternalIds },

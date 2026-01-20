@@ -19,6 +19,7 @@ export class NotificationService {
   private readonly API_URL = environment.apiGatewayUrl;
 
   list(userId: string, unreadOnly = false) {
+    console.log('listing notifs');
     return this.http.get<Notification[]>(`${this.API_URL}/notifications/list_notifications`, {
       params: {
         user_id: userId,

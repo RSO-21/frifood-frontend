@@ -2,49 +2,50 @@
   <h2>Najdene ponudbe v tvoji bližini.</h2>
 
   @if (partners.length === 0) {
-  <div class="empty-state">
-    <p>Ni najdenih ponudb v bližini.</p>
-  </div>
-  } @else {
-  <div class="row">
-    @for (p of partners; track p.id) {
-    <div
-      (click)="openPartner(p)"
-      data-bs-toggle="modal"
-      data-bs-target="#partnerDashboardModal-partners"
-    >
-      <h3>
-        {{ p.name }}
-        @if (ratingFor(p.id)) {
-        <small>
-          ⭐ {{ ratingFor(p.id)!.avg_rating.toFixed(1) }} ({{ ratingFor(p.id)!.count }})
-        </small>
-        } @else {
-        <small class="text-muted">No ratings yet</small>
-        }
-      </h3>
-
-      @if (distanceTo(p) !== null) {
-      <p>{{ distanceTo(p) }}</p>
-      }
-
-      <p>{{ p.address }}, {{ p.city }}</p>
-
-      <!-- PREVIEW: only top 2 -->
-      <app-offers
-        [limit]="2"
-        [partner]="p"
-        (click)="openPartner(p)"
-        data-bs-toggle="modal"
-        data-bs-target="#partnerDashboardModal-partners"
-      ></app-offers>
-
-      <button>Show all offers</button>
-
-      <hr />
+    <div class="empty-state">
+      <p>Ni najdenih ponudb v bližini.</p>
     </div>
-    }
-  </div>
+  } @else {
+    <div class="row">
+      @for (p of partners; track p.id) {
+        <div
+          (click)="openPartner(p)"
+          data-bs-toggle="modal"
+          data-bs-target="#partnerDashboardModal-partners"
+        >
+          <h3>
+            {{ p.name }}
+            {{ p.id }}
+            @if (ratingFor(p.id)) {
+              <small>
+                ⭐ {{ ratingFor(p.id)!.avg_rating.toFixed(1) }} ({{ ratingFor(p.id)!.count }})
+              </small>
+            } @else {
+              <small class="text-muted">No ratings yet</small>
+            }
+          </h3>
+
+          @if (distanceTo(p) !== null) {
+            <p>{{ distanceTo(p) }}</p>
+          }
+
+          <p>{{ p.address }}, {{ p.city }}</p>
+
+          <!-- PREVIEW: only top 2 -->
+          <app-offers
+            [limit]="2"
+            [partner]="p"
+            (click)="openPartner(p)"
+            data-bs-toggle="modal"
+            data-bs-target="#partnerDashboardModal-partners"
+          ></app-offers>
+
+          <button>Show all offers</button>
+
+          <hr />
+        </div>
+      }
+    </div>
   }
 </div>
 <app-partner-dashboard-modal

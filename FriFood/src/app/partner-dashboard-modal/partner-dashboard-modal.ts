@@ -31,6 +31,7 @@ export class PartnerDashboardModal {
       changes['partner']?.currentValue &&
       changes['partner']?.currentValue !== changes['partner']?.previousValue
     ) {
+      console.log('onchanges?');
       this.loadOffers();
     }
   }
